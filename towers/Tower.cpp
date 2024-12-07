@@ -88,6 +88,7 @@ Tower::attack(Object *target) {
 	return true;
 }
 
+
 void
 Tower::draw() {
 	al_draw_bitmap(
@@ -95,6 +96,7 @@ Tower::draw() {
 		shape->center_x() - al_get_bitmap_width(bitmap)/2,
 		shape->center_y() - al_get_bitmap_height(bitmap)/2, 0);
 }
+
 
 /**
  * @brief Get the area of the tower, and return with a Rectangle object.

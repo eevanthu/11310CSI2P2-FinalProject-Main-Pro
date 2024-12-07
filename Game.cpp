@@ -7,6 +7,7 @@
 #include "data/FontCenter.h"
 #include "Player.h"
 #include "Level.h"
+#include "Hero.h"
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -19,6 +20,7 @@
 constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
 constexpr char game_start_sound_path[] = "./assets/sound/growl.wav";
 constexpr char background_img_path[] = "./assets/image/StartBackground.jpg";
+constexpr char init_background_img_path[] = "./assets/image/init_StartBackground.jpg";
 constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
 
 /**
@@ -132,8 +134,11 @@ Game::game_init() {
 
 	DC->level->init();
 
+	DC->hero->init();
+
 	// game start
 	background = IC->get(background_img_path);
+	init_background = IC->get(init_background_img_path);
 	debug_log("Game state: change to START\n");
 	state = STATE::START;
 	al_start_timer(timer);
@@ -162,10 +167,10 @@ Game::game_update() {
 				is_played = true;
 			}
 
-			if(!SC->is_playing(instance)) {
-				debug_log("<Game> state: change to LEVEL\n");
-				state = STATE::LEVEL;
-			}
+            if (DC->key_state[ALLEGRO_KEY_ENTER]) {
+                debug_log("<Game> state: change to LEVEL\n");
+                state = STATE::LEVEL;
+            }
 			break;
 		} case STATE::LEVEL: {
 			static bool BGM_played = false;
@@ -204,6 +209,7 @@ Game::game_update() {
 		DC->player->update();
 		SC->update();
 		ui->update();
+		DC->hero->update();
 		if(state != STATE::START) {
 			DC->level->update();
 			OC->update();
@@ -242,12 +248,15 @@ Game::game_draw() {
 		// user interface
 		if(state != STATE::START) {
 			DC->level->draw();
+			DC->hero->draw();
 			ui->draw();
 			OC->draw();
 		}
 	}
 	switch(state) {
 		case STATE::START: {
+			al_draw_bitmap(init_background, 0, 0, 0);
+            break;
 		} case STATE::LEVEL: {
 			break;
 		} case STATE::PAUSE: {
