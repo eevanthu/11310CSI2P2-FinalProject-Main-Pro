@@ -11,6 +11,7 @@ class Player;
 class Monster;
 /*-----Revise start-----*/
 class Hero;
+class Tank;
 /*-----Revise end-----*/
 /**
  * @brief Stores generic global data and relatively small data structures.
@@ -89,6 +90,7 @@ public:
 	 */
 	/*-----Revise start-----*/
 	Hero *hero;
+	Tank *tank;
 	/*-----Revise end-----*/
 private:
 	DataCenter();

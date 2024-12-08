@@ -8,6 +8,7 @@
 #include "Player.h"
 /*-----I2P Revise start-----*/
 #include "Hero.h"
+#include "Tank.h"
 /*-----I2P Revise end-----*/
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
@@ -152,6 +153,7 @@ void Game::game_init()
 
 	/*-----I2P Revise start-----*/
 	DC->hero->init();
+	DC->tank->init();
 	/*-----I2P Revise end-----*/
 
 	// game start
@@ -243,6 +245,7 @@ bool Game::game_update()
 		ui->update();
 		/*-----I2P Revise start-----*/
 		DC->hero->update();
+		DC->tank->update();
 		/*-----I2P Revise end-----*/
 		if (state != STATE::START)
 		{
@@ -287,6 +290,7 @@ void Game::game_draw()
 			//DC->level->draw();
 			/*-----I2P Revise start-----*/
 			DC->hero->draw();
+			DC->tank->draw();
 			/*-----I2P Revise end-----*/
 			ui->draw();
 			OC->draw();

@@ -4,6 +4,7 @@
 #include "../monsters/Monster.h"
 /*-----I2P Revise start-----*/
 #include "../Hero.h"
+#include "../Tank.h"
 /*-----I2P Revise end-----*/
 
 // fixed settings
@@ -29,6 +30,7 @@ DataCenter::DataCenter()
 	player = new Player();
 	/*-----I2P Revise start-----*/
 	hero = new Hero();
+	tank = new Tank();
 	/*-----I2P Revise end-----*/
 }
 
