@@ -17,6 +17,7 @@ public:
     void init();
     void update();
     void draw();
+    void fire_bullet();
 private:
     TankState state = TankState::ALIVE; // the state of character
     double speed = 5;                   // the move speed of hero

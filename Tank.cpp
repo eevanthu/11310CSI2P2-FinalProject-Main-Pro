@@ -3,9 +3,14 @@
 #include "data/ImageCenter.h"
 #include "algif5/algif.h"
 #include "shapes/Rectangle.h"
+#include "shapes/Point.h"
+#include "Bullet.h"
 #include <iostream>
+#include <vector>
 #include <stdio.h>
 #include <cmath>
+
+std::vector<std::unique_ptr<Bullet>> bullets;
 
 namespace TankSetting
 {
@@ -49,15 +54,27 @@ void Tank::init() {
                               DC->window_height / 2 + height});
 }
 
+void Tank::fire_bullet() {
+    const double bullet_speed = 1000;
+
+    float bullet_x = shape->center_x() - (width / 2) * cos(rotation_angle);
+    float bullet_y = shape->center_y() - (width / 2) * sin(rotation_angle);
+
+    Bullet bullet(shape->center_x(), shape->center_y(), rotation_angle, bullet_speed);
+    bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, bullet_speed));
+}
+
+
 void Tank::update() {
     DataCenter *DC = DataCenter::get_instance();
     static bool last_key_state_w = false;
 
     if (DC->key_state[ALLEGRO_KEY_W]) {
-        // 按下 W 鍵，坦克向前移動
+        // 按下 W 鍵，坦克向前移動，且發射子彈
         moving_forward = true;
         if (last_key_state_w == false) {
             rotation_left *= -1;
+            fire_bullet();
         }
     } else {
         // 沒有按下 W 鍵，坦克停止移動
@@ -82,6 +99,15 @@ void Tank::update() {
             rotation_angle += 2 * M_PI;
         }
     }
+
+    for (auto it = bullets.begin(); it != bullets.end(); ) {
+        (*it)->update();
+        if ((*it)->get_fly_dist() <= 0) {
+            it = bullets.erase(it);
+        } else {
+            ++it;
+        }
+    }   
 }
 
 void Tank::draw() {
@@ -99,4 +125,7 @@ void Tank::draw() {
         shape->center_y(),
         rotation_angle,
         0);
+    for (auto &bullet : bullets) {
+        bullet->draw();
+    }
 }
