@@ -9,12 +9,14 @@
 enum class TankState
 {
     ALIVE,
+    STUNNED,
     DEAD,
     TANKSTATE_MAX
 };
 
 struct ControlScheme {
     int rotate;
+    int stun;
 };
 
 
@@ -26,6 +28,7 @@ public:
     void update();
     void draw();
     void fire_bullet();
+    void stun();
 private:
     TankState state = TankState::ALIVE; // the state of character
     double speed;                   // the move speed of hero
@@ -39,6 +42,8 @@ private:
 
     ControlScheme controlScheme;  
     Point position;
+
+    float stun_timer = 0;
 
     std::vector<std::unique_ptr<Bullet>> bullets;
 };

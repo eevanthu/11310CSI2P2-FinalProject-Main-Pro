@@ -12,7 +12,7 @@
 
 namespace TankSetting {
     static constexpr char png_root_path[50] = "./assets/image/tank";
-    static constexpr char png_postfix[][10] = {"alive", "dead"};
+    static constexpr char png_postfix[][10] = {"alive", "alive", "dead"};
 }
 
 Tank::Tank(const Point &p, const ControlScheme &controlScheme) 
@@ -48,11 +48,36 @@ void Tank::fire_bullet() {
 
     Bullet bullet(shape->center_x(), shape->center_y(), rotation_angle, bullet_speed);
     bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, bullet_speed));
+    bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.08, bullet_speed));
+    bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.16, bullet_speed));
+}
+
+void Tank::stun() {
+    state = TankState::STUNNED;
+    stun_timer = 5;
 }
 
 
 void Tank::update() {
     DataCenter *DC = DataCenter::get_instance();
+
+    switch (state)
+    {
+        case TankState::ALIVE: {
+            stun_timer = 0;
+            angular_speed = 0.08f;
+            speed = 3.5;
+            break;
+        };
+        case TankState::DEAD: break;
+        case TankState::STUNNED: {
+            stun_timer -= (1 / DC->FPS);
+            angular_speed = 1.0f;
+            speed = 2.5;
+            if (stun_timer <= 0) { state = TankState::ALIVE;}
+            break;
+        }
+    }
 
     if (DC->key_state[controlScheme.rotate]) {
         // 按下 W 鍵，坦克向前移動，且發射子彈
@@ -61,6 +86,8 @@ void Tank::update() {
             rotation_left *= -1;
             fire_bullet();
         }
+    } else if (DC->key_state[controlScheme.stun] && !DC->prev_key_state[controlScheme.stun]) {
+        stun();
     } else {
         // 沒有按下 W 鍵，坦克停止移動
         moving_forward = false;

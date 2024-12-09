@@ -155,8 +155,8 @@ void Game::game_init()
 	/*-----I2P Revise start-----*/
 	DC->hero->init();
 	// 創建兩台坦克並初始化
-	ControlScheme player1Controls = {ALLEGRO_KEY_W};
-	ControlScheme player2Controls = {ALLEGRO_KEY_UP};
+	ControlScheme player1Controls = {ALLEGRO_KEY_W, ALLEGRO_KEY_LEFT};
+	ControlScheme player2Controls = {ALLEGRO_KEY_UP, ALLEGRO_KEY_A};
 	Point tank1Pos = {200, 300};
 	Point tank2Pos = {600, 300};
     Tank* tank1 = new Tank(tank1Pos, player1Controls);
