@@ -1,12 +1,20 @@
-# 忽略所有檔案
+# 忽略所有檔案和資料夾
 *
-# 除了這些檔案...
+
+# 不忽略 .gitignore 自己
 !.gitignore
+
+# 不忽略特定類型的檔案
 !*.cpp
 !*.h
+!*.jpg
+!*.png
+
+# 不忽略特定資料夾及其內容
 !assets/
-!assets/*
+!assets/**
 !data/
 !monsters/
 !shapes/
-!assets/*
+
+# 確保資料夾內的檔案不被忽略
