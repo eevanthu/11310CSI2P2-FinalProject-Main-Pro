@@ -1,0 +1,11 @@
+# 忽略所有檔案
+*
+# 除了這些檔案...
+!.gitignore
+!*.cpp
+!*.h
+!assets/
+!data/
+!monsters/
+!shapes/
+!assets/*
