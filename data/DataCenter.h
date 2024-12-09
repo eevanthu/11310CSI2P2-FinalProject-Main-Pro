@@ -90,7 +90,7 @@ public:
 	 */
 	/*-----Revise start-----*/
 	Hero *hero;
-	Tank *tank;
+	std::vector<Tank*> tanks;
 	/*-----Revise end-----*/
 private:
 	DataCenter();

@@ -30,7 +30,6 @@ DataCenter::DataCenter()
 	player = new Player();
 	/*-----I2P Revise start-----*/
 	hero = new Hero();
-	tank = new Tank();
 	/*-----I2P Revise end-----*/
 }
 
@@ -40,5 +39,9 @@ DataCenter::~DataCenter()
 	for (Monster *&m : monsters)
 	{
 		delete m;
+	}
+	for (Tank *&t : tanks)
+	{
+		delete t;
 	}
 }

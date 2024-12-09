@@ -3,24 +3,22 @@
 #include "data/ImageCenter.h"
 #include "algif5/algif.h"
 #include "shapes/Rectangle.h"
-#include "shapes/Point.h"
+#include "./shapes/Point.h"
 #include "Bullet.h"
 #include <iostream>
 #include <vector>
 #include <stdio.h>
 #include <cmath>
 
-std::vector<std::unique_ptr<Bullet>> bullets;
-
-namespace TankSetting
-{
+namespace TankSetting {
     static constexpr char png_root_path[50] = "./assets/image/tank";
-    static constexpr char png_postfix[][10] = {
-        "alive",
-        "dead"
-    };
-
+    static constexpr char png_postfix[][10] = {"alive", "dead"};
 }
+
+Tank::Tank(const Point &p, const ControlScheme &controlScheme) 
+ : position(p), controlScheme(controlScheme) , state(TankState::ALIVE),
+      rotation_angle(0.0f), rotation_left(1), angular_speed(0.1), speed(3.5),
+      moving_forward(false) {}
 
 void Tank::init() {
     for (size_t type = 0; type < static_cast<size_t>(TankState::TANKSTATE_MAX); ++type)
@@ -35,23 +33,11 @@ void Tank::init() {
     DataCenter *DC = DataCenter::get_instance();
     ImageCenter *IC = ImageCenter::get_instance();
 
-
-    // 設定初始角度
-    rotation_angle = M_PI / 2;
-    rotation_left = 1;
-    angular_speed = 0.08f;
-    speed = 3;
-    moving_forward = false;
-    TankState state = TankState::ALIVE;
-
     // 設定圖片大小
     ALLEGRO_BITMAP *bitmap = IC->get(pngPath[state]);
     width = al_get_bitmap_width(bitmap);
     height = al_get_bitmap_height(bitmap);
-    shape.reset(new Rectangle{DC->window_width / 2,
-                              DC->window_height / 2,
-                              DC->window_width / 2 + width,
-                              DC->window_height / 2 + height});
+    shape.reset(new Rectangle{position.x, position.y, position.x + width, position.y + height});
 }
 
 void Tank::fire_bullet() {
@@ -67,12 +53,11 @@ void Tank::fire_bullet() {
 
 void Tank::update() {
     DataCenter *DC = DataCenter::get_instance();
-    static bool last_key_state_w = false;
 
-    if (DC->key_state[ALLEGRO_KEY_W]) {
+    if (DC->key_state[controlScheme.rotate]) {
         // 按下 W 鍵，坦克向前移動，且發射子彈
         moving_forward = true;
-        if (last_key_state_w == false) {
+        if (!DC->prev_key_state[controlScheme.rotate]) {
             rotation_left *= -1;
             fire_bullet();
         }
@@ -80,8 +65,6 @@ void Tank::update() {
         // 沒有按下 W 鍵，坦克停止移動
         moving_forward = false;
     }
-
-    last_key_state_w = DC->key_state[ALLEGRO_KEY_W];
 
     if (moving_forward == true) {
         float radian = rotation_angle;
@@ -102,11 +85,8 @@ void Tank::update() {
 
     for (auto it = bullets.begin(); it != bullets.end(); ) {
         (*it)->update();
-        if ((*it)->get_fly_dist() <= 0) {
-            it = bullets.erase(it);
-        } else {
-            ++it;
-        }
+        if ((*it)->get_fly_dist() <= 0) it = bullets.erase(it);
+        else ++it;
     }   
 }
 

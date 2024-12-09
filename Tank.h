@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 #include "Object.h"
+#include "Bullet.h"
+#include "shapes/Point.h"
 
 enum class TankState
 {
@@ -11,21 +13,33 @@ enum class TankState
     TANKSTATE_MAX
 };
 
+struct ControlScheme {
+    int rotate;
+};
+
+
 class Tank : public Object
 {
 public:
+    Tank(const Point &p, const ControlScheme& controlScheme);
     void init();
     void update();
     void draw();
     void fire_bullet();
 private:
     TankState state = TankState::ALIVE; // the state of character
-    double speed = 5;                   // the move speed of hero
+    double speed;                   // the move speed of hero
+    float rotation_angle;
+    float angular_speed;
+    bool moving_forward;
+    int rotation_left;
+
     int width, height;                  // the width and height of the hero image
     std::map<TankState, std::string> pngPath;
-    float rotation_angle = 0.0f;
-    float angular_speed = 0.5;
-    bool moving_forward = false;
-    int rotation_left = 1;
+
+    ControlScheme controlScheme;  
+    Point position;
+
+    std::vector<std::unique_ptr<Bullet>> bullets;
 };
 #endif

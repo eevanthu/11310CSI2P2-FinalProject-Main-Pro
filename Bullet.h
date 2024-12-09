@@ -24,5 +24,4 @@ private:
     ALLEGRO_BITMAP *bitmap;
 };
 
-
 #endif
