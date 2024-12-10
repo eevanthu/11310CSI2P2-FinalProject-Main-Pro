@@ -4,6 +4,8 @@
 #include "../Player.h"
 /*-----I2P Revise start-----*/
 #include "../Hero.h"
+#include "../Tank.h"
+#include "../Bullet.h"
 /*-----I2P Revise end-----*/
 
 void OperationCenter::update()
@@ -14,7 +16,8 @@ void OperationCenter::update()
 	// If any monster reaches the end, hurt the player and delete the monster.
 	_update_monster_player();
 	/*-----I2P Revise start-----*/
-	_update_monster_hero();
+	// _update_monster_hero();
+	_update_tank_bullet();
 	/*-----I2P Revise end-----*/
 }
 
@@ -67,6 +70,26 @@ void OperationCenter::_update_monster_hero()
 			monsters[i]->HP = 0;
 		}
 	}
+}
+
+void OperationCenter::_update_tank_bullet() {
+	DataCenter *DC = DataCenter::get_instance();
+	std::vector<Tank *> &tanks = DC->tanks;
+    std::vector<std::unique_ptr<Bullet>> &bullets = DC->bullets;
+
+    for (size_t i = 0; i < bullets.size(); ++i)
+    {
+        for (size_t j = 0; j < tanks.size(); ++j)
+        {
+            // 檢查子彈與坦克是否重疊
+            if (bullets[i]->shape->overlap(*(tanks[j]->shape)))
+            {
+                // 子彈擊中坦克的行為處理
+                tanks[j]->stun(); // 將坦克設為死亡狀態
+                bullets[i]->set_fly_dist(0);         // 設定子彈為無效
+            }
+        }
+    }
 }
 /*-----I2P Revise end-----*/
 

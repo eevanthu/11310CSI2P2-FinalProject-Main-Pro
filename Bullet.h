@@ -12,6 +12,7 @@ public:
     Bullet(double x, double y, const float& angle ,double speed);
     void update();
     void draw();
+    void set_fly_dist(double dist) { fly_dist = dist; }
     bool is_out_of_range() const;
     const double &get_fly_dist() const { return fly_dist; }
     const int &get_dmg() const { return dmg; }

@@ -41,13 +41,14 @@ void Tank::init() {
 }
 
 void Tank::fire_bullet() {
+    DataCenter *DC = DataCenter::get_instance();
+
     const double bullet_speed = 1000;
 
     float bullet_x = shape->center_x() - (width / 2) * cos(rotation_angle);
     float bullet_y = shape->center_y() - (width / 2) * sin(rotation_angle);
 
-    Bullet bullet(shape->center_x(), shape->center_y(), rotation_angle, bullet_speed);
-    bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, bullet_speed));
+    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, bullet_speed));
     // bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.08, bullet_speed));
     // bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.16, bullet_speed));
 }
@@ -110,11 +111,11 @@ void Tank::update() {
         }
     }
 
-    for (auto it = bullets.begin(); it != bullets.end(); ) {
-        (*it)->update();
-        if ((*it)->get_fly_dist() <= 0) it = bullets.erase(it);
-        else ++it;
-    }   
+    // for (auto it = bullets.begin(); it != bullets.end(); ) {
+    //     (*it)->update();
+    //     if ((*it)->get_fly_dist() <= 0) it = bullets.erase(it);
+    //     else ++it;
+    // }   
 }
 
 void Tank::draw() {
@@ -132,7 +133,7 @@ void Tank::draw() {
         shape->center_y(),
         rotation_angle,
         0);
-    for (auto &bullet : bullets) {
-        bullet->draw();
-    }
+    // for (auto &bullet : bullets) {
+    //     bullet->draw();
+    // }
 }

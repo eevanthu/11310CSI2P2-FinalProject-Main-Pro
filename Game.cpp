@@ -169,8 +169,8 @@ void Game::game_init()
     DC->tanks.push_back(tank2);
 
 	// Create obstacles
-	for (int i = 1; i <= 15; i++) {
-		Point obstaclePos = {i * 100, DC->window_height / 2};
+	for (int i = 10; i <= 20; i++) {
+		Point obstaclePos = {i * 30, DC->window_height / 2};
 		Obstacle* obstacle = new Obstacle(obstaclePos);
 		DC->obstacles.push_back(obstacle);
 	}
@@ -270,6 +270,11 @@ bool Game::game_update()
 		/*-----I2P Revise start-----*/
 		DC->hero->update();
 		for (Tank* tank : DC->tanks) tank->update();
+		for (auto it = DC->bullets.begin(); it != DC->bullets.end(); ) {
+        	(*it)->update();
+        	if ((*it)->get_fly_dist() <= 0) it = DC->bullets.erase(it);
+        	else ++it;
+    	}
 		// Maybe we need to update obstacles later
 		// for (Obstacle* obstacle : DC->obstacles) obstacle->update();
 		/*-----I2P Revise end-----*/
@@ -318,6 +323,7 @@ void Game::game_draw()
 			// DC->hero->draw();
 			for (Tank* tank : DC->tanks) tank->draw();
 			for (Obstacle* obstacle : DC->obstacles) obstacle->draw();
+			for (auto &bullet : DC->bullets) {bullet->draw();}
 			/*-----I2P Revise end-----*/
 			ui->draw();
 			OC->draw();

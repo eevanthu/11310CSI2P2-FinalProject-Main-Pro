@@ -29,6 +29,7 @@ public:
     void draw();
     void fire_bullet();
     void stun();
+    void set_state(TankState state) { this->state = state; }
 private:
     TankState state = TankState::ALIVE; // the state of character
     double speed;                   // the move speed of hero
@@ -45,7 +46,5 @@ private:
     ControlScheme controlScheme;  
 
     float stun_timer = 0;
-
-    std::vector<std::unique_ptr<Bullet>> bullets;
 };
 #endif

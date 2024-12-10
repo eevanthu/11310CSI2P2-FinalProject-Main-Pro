@@ -32,6 +32,7 @@ private:
 	void _update_monster_player();
 	/*-----Revise start-----*/
 	void _update_monster_hero();
+	void _update_tank_bullet();
 	/*-----Revise end-----*/
 private:
 	void _draw_monster();
