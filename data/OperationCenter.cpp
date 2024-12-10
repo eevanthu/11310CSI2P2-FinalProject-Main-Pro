@@ -6,6 +6,7 @@
 #include "../Hero.h"
 #include "../Tank.h"
 #include "../Bullet.h"
+#include "../Obstacle.h"
 /*-----I2P Revise end-----*/
 
 void OperationCenter::update()
@@ -18,6 +19,8 @@ void OperationCenter::update()
 	/*-----I2P Revise start-----*/
 	// _update_monster_hero();
 	_update_tank_bullet();
+	_update_tank_obstacle();
+	_update_bullet_obstacle();
 	/*-----I2P Revise end-----*/
 }
 
@@ -86,6 +89,40 @@ void OperationCenter::_update_tank_bullet() {
                 // 子彈擊中坦克的行為處理
                 tanks[j]->stun(); // 將坦克設為死亡狀態
                 bullets[i]->set_fly_dist(0);         // 設定子彈為無效
+            }
+        }
+    }
+}
+
+void OperationCenter::_update_tank_obstacle() {
+    DataCenter *DC = DataCenter::get_instance();
+    std::vector<Tank *> &tanks = DC->tanks;
+    std::vector<Obstacle *> &obstacles = DC->obstacles;
+
+    for (size_t i = 0; i < tanks.size(); ++i) {
+        for (size_t j = 0; j < obstacles.size(); ++j) {
+			bool is_overlap = tanks[i]->shape->overlap(*(obstacles[j]->shape));
+            if (is_overlap) {
+				tanks[i]->set_obstacle_overlap(true);
+                // 簡單地反向退回一段距離
+                const float reverse_distance = 5.0; // 退回的距離
+                float local_dx = cos(tanks[i]->get_rotation_angle()) * reverse_distance;
+                float local_dy = sin(tanks[i]->get_rotation_angle()) * reverse_distance;
+				tanks[i]->set_position(Point{tanks[i]->shape->center_x() + local_dx, tanks[i]->shape->center_y() + local_dy});
+            }
+        }
+    }
+}
+
+void OperationCenter::_update_bullet_obstacle() {
+    DataCenter *DC = DataCenter::get_instance();
+    std::vector<std::unique_ptr<Bullet>> &bullets = DC->bullets;
+    std::vector<Obstacle *> &obstacles = DC->obstacles;
+
+    for (size_t i = 0; i < bullets.size(); ++i) {
+        for (size_t j = 0; j < obstacles.size(); ++j) {
+            if (bullets[i]->shape->overlap(*(obstacles[j]->shape))) {
+				bullets[i]->set_fly_dist(0);
             }
         }
     }

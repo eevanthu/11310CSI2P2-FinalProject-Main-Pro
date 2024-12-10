@@ -9,6 +9,7 @@
 enum class TankState
 {
     ALIVE,
+    STOPPED,
     STUNNED,
     DEAD,
     TANKSTATE_MAX
@@ -29,15 +30,25 @@ public:
     void draw();
     void fire_bullet();
     void stun();
+    void set_moving_forward(bool moving_forward) { this->moving_forward = moving_forward; }
+    void set_position(const Point &p) {
+        shape->update_center_x(p.x);
+        shape->update_center_y(p.y); }
     void set_state(TankState state) { this->state = state; }
+    void set_obstacle_overlap(bool is_overlap) { is_obstacle_overlap = is_overlap; }
+    float get_rotation_angle() { return rotation_angle; }
+    double get_position_x() { return position.x; }
+    double get_position_y() { return position.y; }
     int get_id() const { return id; }
 private:
     TankState state = TankState::ALIVE; // the state of character
-    double speed;                   // the move speed of hero
+    double speed;
     float rotation_angle;
     float angular_speed;
     bool moving_forward;
     int rotation_left;
+
+    bool is_obstacle_overlap;
 
     int id;
 

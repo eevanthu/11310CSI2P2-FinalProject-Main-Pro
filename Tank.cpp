@@ -12,13 +12,14 @@
 
 namespace TankSetting {
     static constexpr char png_root_path[50] = "./assets/image/tank";
-    static constexpr char png_postfix[][10] = {"alive", "alive", "dead"};
+    static constexpr char png_postfix[][10] = {"alive", "alive", "alive", "dead"};
 }
 
 Tank::Tank(const Point &p, const ControlScheme &controlScheme) 
  : position(p), controlScheme(controlScheme) , state(TankState::ALIVE),
       rotation_angle(0.0f), rotation_left(1), angular_speed(0.1), speed(3.5),
-      moving_forward(false) { if (controlScheme.rotate == ALLEGRO_KEY_W) id = 1; else id = 2; }
+      moving_forward(false), is_obstacle_overlap(false) 
+      { if (controlScheme.rotate == ALLEGRO_KEY_W) id = 1; else id = 2; }
 
 void Tank::init() {
     for (size_t type = 0; type < static_cast<size_t>(TankState::TANKSTATE_MAX); ++type)
@@ -63,39 +64,60 @@ void Tank::update() {
             stun_timer = 0;
             angular_speed = 0.08f;
             speed = 3.5;
+            if (DC->key_state[controlScheme.rotate]) {
+                // 按下 W 鍵，坦克向前移動，且發射子彈
+                moving_forward = true;
+                if (!DC->prev_key_state[controlScheme.rotate]) {
+                    rotation_left *= -1;
+                    fire_bullet();
+                }
+            } else if (DC->key_state[controlScheme.stun] && !DC->prev_key_state[controlScheme.stun]) {
+                stun();
+            } else {
+                // 沒有按下 W 鍵，坦克停止移動
+                moving_forward = false;
+            }
             break;
         };
         case TankState::DEAD: break;
+        case TankState::STOPPED: {
+            speed = 0;
+            if (DC->key_state[controlScheme.rotate] && !DC->prev_key_state[controlScheme.rotate])
+                state = TankState::ALIVE;
+            if (!DC->key_state[controlScheme.rotate]) moving_forward = false;
+                break;
+        }
         case TankState::STUNNED: {
             stun_timer -= (1 / DC->FPS);
             angular_speed = 1.0f;
             speed = 2.5;
             if (stun_timer <= 0) { state = TankState::ALIVE;}
+            if (DC->key_state[controlScheme.rotate]) {
+                // 按下 W 鍵，坦克向前移動，且發射子彈
+                moving_forward = true;
+                if (!DC->prev_key_state[controlScheme.rotate]) {
+                    rotation_left *= -1;
+                    fire_bullet();
+                }
+            } else if (DC->key_state[controlScheme.stun] && !DC->prev_key_state[controlScheme.stun]) {
+                stun();
+            } else {
+                // 沒有按下 W 鍵，坦克停止移動
+                moving_forward = false;
+            }
             break;
         }
-    }
-
-    if (DC->key_state[controlScheme.rotate]) {
-        // 按下 W 鍵，坦克向前移動，且發射子彈
-        moving_forward = true;
-        if (!DC->prev_key_state[controlScheme.rotate]) {
-            rotation_left *= -1;
-            fire_bullet();
-        }
-    } else if (DC->key_state[controlScheme.stun] && !DC->prev_key_state[controlScheme.stun]) {
-        stun();
-    } else {
-        // 沒有按下 W 鍵，坦克停止移動
-        moving_forward = false;
     }
 
     if (moving_forward == true) {
         float radian = rotation_angle;
         float dx = speed * cos(radian);
         float dy = speed * sin(radian);
-
-        shape->update_center_x(shape->center_x() - dx);
-        shape->update_center_y(shape->center_y() - dy);
+        
+        if (!is_obstacle_overlap) {
+            shape->update_center_x(shape->center_x() - dx);
+            shape->update_center_y(shape->center_y() - dy);
+        } else is_obstacle_overlap = false;
 
     } else {
         rotation_angle += (rotation_left * angular_speed);
