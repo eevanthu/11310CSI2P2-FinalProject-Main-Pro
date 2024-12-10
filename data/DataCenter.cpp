@@ -5,6 +5,7 @@
 /*-----I2P Revise start-----*/
 #include "../Hero.h"
 #include "../Tank.h"
+#include "../Obstacle.h"
 /*-----I2P Revise end-----*/
 
 // fixed settings

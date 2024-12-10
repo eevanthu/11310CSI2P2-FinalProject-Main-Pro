@@ -18,7 +18,7 @@ namespace TankSetting {
 Tank::Tank(const Point &p, const ControlScheme &controlScheme) 
  : position(p), controlScheme(controlScheme) , state(TankState::ALIVE),
       rotation_angle(0.0f), rotation_left(1), angular_speed(0.1), speed(3.5),
-      moving_forward(false) {}
+      moving_forward(false) { if (controlScheme.rotate == ALLEGRO_KEY_W) id = 1; else id = 2; }
 
 void Tank::init() {
     for (size_t type = 0; type < static_cast<size_t>(TankState::TANKSTATE_MAX); ++type)
@@ -30,7 +30,6 @@ void Tank::init() {
             TankSetting::png_postfix[static_cast<int>(type)]);
         pngPath[static_cast<TankState>(type)] = std::string{buffer};
     }
-    DataCenter *DC = DataCenter::get_instance();
     ImageCenter *IC = ImageCenter::get_instance();
 
     // 設定圖片大小
@@ -43,19 +42,15 @@ void Tank::init() {
 void Tank::fire_bullet() {
     DataCenter *DC = DataCenter::get_instance();
 
-    const double bullet_speed = 1000;
-
     float bullet_x = shape->center_x() - (width / 2) * cos(rotation_angle);
     float bullet_y = shape->center_y() - (width / 2) * sin(rotation_angle);
 
-    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, bullet_speed));
-    // bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.08, bullet_speed));
-    // bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.16, bullet_speed));
+    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, id));
 }
 
 void Tank::stun() {
     state = TankState::STUNNED;
-    stun_timer = 5;
+    stun_timer = 3;
 }
 
 

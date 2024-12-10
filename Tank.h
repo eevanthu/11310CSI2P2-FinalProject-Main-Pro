@@ -30,6 +30,7 @@ public:
     void fire_bullet();
     void stun();
     void set_state(TankState state) { this->state = state; }
+    int get_id() const { return id; }
 private:
     TankState state = TankState::ALIVE; // the state of character
     double speed;                   // the move speed of hero
@@ -37,6 +38,8 @@ private:
     float angular_speed;
     bool moving_forward;
     int rotation_left;
+
+    int id;
 
     // size, position and path
     Point position;

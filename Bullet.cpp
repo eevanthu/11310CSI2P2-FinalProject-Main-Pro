@@ -8,10 +8,12 @@
 #include <iostream>
 #include <cmath>
 
-Bullet::Bullet(double x, double y, const float& angle, double speed) {
+Bullet::Bullet(double x, double y, const float& angle, int owner_id) {
     ImageCenter *IC = ImageCenter::get_instance();
     this->fly_dist = 100000;
     this->dmg = 10;
+    this->owner_id = owner_id;
+    this->speed = 1000;
     rotation_angle = angle;
     bitmap = IC->get("./assets/image/bullet.png");
     vx = speed * cos(angle);

@@ -11,10 +11,10 @@
 void OperationCenter::update()
 {
 	// Update monsters.
-	_update_monster();
+	// _update_monster();
 	// Update towers.
 	// If any monster reaches the end, hurt the player and delete the monster.
-	_update_monster_player();
+	// _update_monster_player();
 	/*-----I2P Revise start-----*/
 	// _update_monster_hero();
 	_update_tank_bullet();
@@ -27,10 +27,6 @@ void OperationCenter::_update_monster()
 	for (Monster *monster : monsters)
 		monster->update();
 }
-
-
-
-
 
 void OperationCenter::_update_monster_player()
 {
@@ -81,6 +77,9 @@ void OperationCenter::_update_tank_bullet() {
     {
         for (size_t j = 0; j < tanks.size(); ++j)
         {
+			if (bullets[i]->get_owner_id() == tanks[j]->get_id()) {
+				continue;
+			}
             // 檢查子彈與坦克是否重疊
             if (bullets[i]->shape->overlap(*(tanks[j]->shape)))
             {
