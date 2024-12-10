@@ -48,8 +48,8 @@ void Tank::fire_bullet() {
 
     Bullet bullet(shape->center_x(), shape->center_y(), rotation_angle, bullet_speed);
     bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, bullet_speed));
-    bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.08, bullet_speed));
-    bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.16, bullet_speed));
+    // bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.08, bullet_speed));
+    // bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.16, bullet_speed));
 }
 
 void Tank::stun() {

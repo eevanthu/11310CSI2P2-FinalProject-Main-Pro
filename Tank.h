@@ -37,11 +37,12 @@ private:
     bool moving_forward;
     int rotation_left;
 
+    // size, position and path
+    Point position;
     int width, height;                  // the width and height of the hero image
     std::map<TankState, std::string> pngPath;
 
     ControlScheme controlScheme;  
-    Point position;
 
     float stun_timer = 0;
 

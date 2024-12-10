@@ -9,6 +9,7 @@
 /*-----I2P Revise start-----*/
 #include "Hero.h"
 #include "Tank.h"
+#include "Obstacle.h"
 #include "./shapes/Point.h"
 /*-----I2P Revise end-----*/
 #include <allegro5/allegro_primitives.h>
@@ -157,18 +158,26 @@ void Game::game_init()
 	// 創建兩台坦克並初始化
 	ControlScheme player1Controls = {ALLEGRO_KEY_W, ALLEGRO_KEY_LEFT};
 	ControlScheme player2Controls = {ALLEGRO_KEY_UP, ALLEGRO_KEY_A};
-	Point tank1Pos = {200, 300};
-	Point tank2Pos = {600, 300};
+	Point tank1Pos = {DC->window_width / 2 - 700, 100};
+	Point tank2Pos = {DC->window_width / 2 + 700, 800};
     Tank* tank1 = new Tank(tank1Pos, player1Controls);
     Tank* tank2 = new Tank(tank2Pos, player2Controls);
     
+
     // 將坦克加入 DataCenter 的 tanks 向量
     DC->tanks.push_back(tank1);
     DC->tanks.push_back(tank2);
 
-	for (Tank* tank : DC->tanks) {
-		tank->init();
+	// Create obstacles
+	for (int i = 1; i <= 15; i++) {
+		Point obstaclePos = {i * 100, DC->window_height / 2};
+		Obstacle* obstacle = new Obstacle(obstaclePos);
+		DC->obstacles.push_back(obstacle);
 	}
+
+	for (Tank* tank : DC->tanks) tank->init();
+	for (Obstacle* obstacle : DC->obstacles) obstacle->init();
+
 	/*-----I2P Revise end-----*/
 
 	// game start
@@ -260,9 +269,9 @@ bool Game::game_update()
 		ui->update();
 		/*-----I2P Revise start-----*/
 		DC->hero->update();
-		for (Tank* tank : DC->tanks) {
-			tank->update();
-		}
+		for (Tank* tank : DC->tanks) tank->update();
+		// Maybe we need to update obstacles later
+		// for (Obstacle* obstacle : DC->obstacles) obstacle->update();
 		/*-----I2P Revise end-----*/
 		if (state != STATE::START)
 		{
@@ -306,10 +315,9 @@ void Game::game_draw()
 		{
 			//DC->level->draw();
 			/*-----I2P Revise start-----*/
-			DC->hero->draw();
-			for (Tank* tank : DC->tanks) {
-				tank->draw();
-			}
+			// DC->hero->draw();
+			for (Tank* tank : DC->tanks) tank->draw();
+			for (Obstacle* obstacle : DC->obstacles) obstacle->draw();
 			/*-----I2P Revise end-----*/
 			ui->draw();
 			OC->draw();

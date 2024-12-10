@@ -12,6 +12,7 @@ class Monster;
 /*-----Revise start-----*/
 class Hero;
 class Tank;
+class Obstacle;
 /*-----Revise end-----*/
 /**
  * @brief Stores generic global data and relatively small data structures.
@@ -91,6 +92,7 @@ public:
 	/*-----Revise start-----*/
 	Hero *hero;
 	std::vector<Tank*> tanks;
+	std::vector<Obstacle*> obstacles;
 	/*-----Revise end-----*/
 private:
 	DataCenter();

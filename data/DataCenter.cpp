@@ -36,12 +36,7 @@ DataCenter::DataCenter()
 DataCenter::~DataCenter()
 {
 	delete player;
-	for (Monster *&m : monsters)
-	{
-		delete m;
-	}
-	for (Tank *&t : tanks)
-	{
-		delete t;
-	}
+	for (Monster *&m : monsters) delete m;
+	for (Tank *&t : tanks) delete t;
+	for (Obstacle *&o : obstacles) delete o;
 }
