@@ -13,15 +13,15 @@
 // fixed settings
 constexpr char love_img_path[] = "./assets/image/love.png";
 constexpr int love_img_padding = 5;
-constexpr int tower_img_left_padding = 30;
-constexpr int tower_img_top_padding = 30;
+// constexpr int tower_img_left_padding = 30;
+// constexpr int tower_img_top_padding = 30;
 
 void
 UI::init() {
-	DataCenter *DC = DataCenter::get_instance();
+	// DataCenter *DC = DataCenter::get_instance();
 	ImageCenter *IC = ImageCenter::get_instance();
 	love = IC->get(love_img_path);
-	int max_height = 0;
+	// int max_height = 0;
 	// arrange tower shop
 	debug_log("<UI> state: change to HALT\n");
 	state = STATE::HALT;
@@ -77,7 +77,7 @@ void
 UI::draw() {
 	DataCenter *DC = DataCenter::get_instance();
 	FontCenter *FC = FontCenter::get_instance();
-	const Point &mouse = DC->mouse;
+	// const Point &mouse = DC->mouse;
 	// draw HP
 	const int &game_field_length = DC->game_field_length;
 	const int &player_HP = DC->player->HP;

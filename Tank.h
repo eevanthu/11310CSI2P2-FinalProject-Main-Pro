@@ -41,23 +41,25 @@ public:
     double get_position_y() { return position.y; }
     int get_id() const { return id; }
 private:
+    // size, position and path
+    Point position;
+    ControlScheme controlScheme;  
     TankState state = TankState::ALIVE; // the state of character
-    double speed;
     float rotation_angle;
-    float angular_speed;
-    bool moving_forward;
     int rotation_left;
-
+    float angular_speed;
+    double speed;
+    bool moving_forward;
     bool is_obstacle_overlap;
+
+
 
     int id;
 
-    // size, position and path
-    Point position;
+    
     int width, height;                  // the width and height of the hero image
     std::map<TankState, std::string> pngPath;
 
-    ControlScheme controlScheme;  
 
     float stun_timer = 0;
 };

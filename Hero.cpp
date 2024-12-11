@@ -23,8 +23,8 @@ void Hero::init()
     for (size_t type = 0; type < static_cast<size_t>(HeroState::HEROSTATE_MAX); ++type)
     {
         char buffer[50];
-        sprintf(
-            buffer, "%s/dragonite_%s.gif",
+        snprintf(
+            buffer, sizeof(buffer), "%s/dragonite_%s.gif",
             HeroSetting::gif_root_path,
             HeroSetting::gif_postfix[static_cast<int>(type)]);
         gifPath[static_cast<HeroState>(type)] = std::string{buffer};

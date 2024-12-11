@@ -58,18 +58,18 @@ void OperationCenter::_update_monster_player()
 	}
 }
 /*-----I2P Revise start-----*/
-void OperationCenter::_update_monster_hero()
-{
-	DataCenter *DC = DataCenter::get_instance();
-	std::vector<Monster *> &monsters = DC->monsters;
-	for (size_t i = 0; i < monsters.size(); ++i)
-	{
-		if (monsters[i]->shape->overlap(*(DC->hero->shape)))
-		{
-			monsters[i]->HP = 0;
-		}
-	}
-}
+// void OperationCenter::_update_monster_hero()
+// {
+// 	DataCenter *DC = DataCenter::get_instance();
+// 	std::vector<Monster *> &monsters = DC->monsters;
+// 	for (size_t i = 0; i < monsters.size(); ++i)
+// 	{
+// 		if (monsters[i]->shape->overlap(*(DC->hero->shape)))
+// 		{
+// 			monsters[i]->HP = 0;
+// 		}
+// 	}
+// }
 
 void OperationCenter::_update_tank_bullet() {
 	DataCenter *DC = DataCenter::get_instance();

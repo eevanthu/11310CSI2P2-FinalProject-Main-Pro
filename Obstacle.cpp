@@ -15,20 +15,20 @@ namespace ObstacleSetting
     };
 }
 
-Obstacle::Obstacle(const Point &p) : position(p), state(ObstacleState::EXIST) {}
+Obstacle::Obstacle(const Point &p) : state(ObstacleState::EXIST), position(p) {}
 
 void Obstacle::init()
 {
     for (size_t type = 0; type < static_cast<size_t>(ObstacleState::OBSTACLESTATE_MAX); ++type)
     {
         char buffer[50];
-        sprintf(
-            buffer, "%s/obstacle_%s.png",
+        snprintf(
+            buffer, sizeof(buffer), "%s/obstacle_%s.png",
             ObstacleSetting::png_root_path,
             ObstacleSetting::png_postfix[static_cast<int>(type)]);
         pngPath[static_cast<ObstacleState>(type)] = std::string{buffer};
     }
-    DataCenter *DC = DataCenter::get_instance();
+    // DataCenter *DC = DataCenter::get_instance();
     ImageCenter *IC = ImageCenter::get_instance();
 
     ALLEGRO_BITMAP *bitmap = IC->get(pngPath[state]);

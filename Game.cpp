@@ -154,7 +154,7 @@ void Game::game_init()
 	ui->init();
 
 	/*-----I2P Revise start-----*/
-	DC->hero->init();
+	// DC->hero->init();
 	// 創建兩台坦克並初始化
 	ControlScheme player1Controls = {ALLEGRO_KEY_W, ALLEGRO_KEY_LEFT};
 	ControlScheme player2Controls = {ALLEGRO_KEY_UP, ALLEGRO_KEY_A};
@@ -268,7 +268,7 @@ bool Game::game_update()
 		SC->update();
 		ui->update();
 		/*-----I2P Revise start-----*/
-		DC->hero->update();
+		// DC->hero->update();
 		for (Tank* tank : DC->tanks) tank->update();
 		for (auto it = DC->bullets.begin(); it != DC->bullets.end(); ) {
         	(*it)->update();

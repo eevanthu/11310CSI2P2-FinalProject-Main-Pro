@@ -30,7 +30,7 @@ DataCenter::DataCenter()
 	memset(prev_mouse_state, false, sizeof(prev_mouse_state));
 	player = new Player();
 	/*-----I2P Revise start-----*/
-	hero = new Hero();
+	// hero = new Hero();
 	/*-----I2P Revise end-----*/
 }
 

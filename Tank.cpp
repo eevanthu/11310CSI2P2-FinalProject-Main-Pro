@@ -25,8 +25,8 @@ void Tank::init() {
     for (size_t type = 0; type < static_cast<size_t>(TankState::TANKSTATE_MAX); ++type)
     {
         char buffer[50];
-        sprintf(
-            buffer, "%s/tank_%s.png",
+        snprintf(
+            buffer, sizeof(buffer), "%s/tank_%s.png",
             TankSetting::png_root_path,
             TankSetting::png_postfix[static_cast<int>(type)]);
         pngPath[static_cast<TankState>(type)] = std::string{buffer};
@@ -107,6 +107,7 @@ void Tank::update() {
             }
             break;
         }
+        case TankState::TANKSTATE_MAX: break; 
     }
 
     if (moving_forward == true) {

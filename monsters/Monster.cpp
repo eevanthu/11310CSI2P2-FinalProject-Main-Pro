@@ -70,7 +70,7 @@ Dir convert_dir(const Point &v) {
 }
 
 Monster::Monster(const vector<Point> &path, MonsterType type) {
-	DataCenter *DC = DataCenter::get_instance();
+	// DataCenter *DC = DataCenter::get_instance();
 
 	shape.reset(new Rectangle{0, 0, 0, 0});
 	this->type = type;
@@ -96,7 +96,7 @@ Monster::Monster(const vector<Point> &path, MonsterType type) {
  */
 void
 Monster::update() {
-	DataCenter *DC = DataCenter::get_instance();
+	// DataCenter *DC = DataCenter::get_instance();
 	ImageCenter *IC = ImageCenter::get_instance();
 
 	// After a period, the bitmap for this monster should switch from (i)-th image to (i+1)-th image to represent animation.
@@ -106,13 +106,13 @@ Monster::update() {
 		bitmap_switch_counter = bitmap_switch_freq;
 	}
 	// v (velocity) divided by FPS is the actual moving pixels per frame.
-	double movement = v / DC->FPS;
+	// double movement = v / DC->FPS;
 	// Keep trying to move to next destination in "path" while "path" is not empty and we can still move.
 	
 	// Update real hit box for monster.
 	char buffer[50];
-	sprintf(
-		buffer, "%s/%s_%d.png",
+	snprintf(
+		buffer, sizeof(buffer), "%s/%s_%d.png",
 		MonsterSetting::monster_imgs_root_path[static_cast<int>(type)],
 		MonsterSetting::dir_path_prefix[static_cast<int>(dir)],
 		bitmap_img_ids[static_cast<int>(dir)][bitmap_img_id]);
@@ -132,8 +132,8 @@ void
 Monster::draw() {
 	ImageCenter *IC = ImageCenter::get_instance();
 	char buffer[50];
-	sprintf(
-		buffer, "%s/%s_%d.png",
+	snprintf(
+		buffer, sizeof(buffer), "%s/%s_%d.png",
 		MonsterSetting::monster_imgs_root_path[static_cast<int>(type)],
 		MonsterSetting::dir_path_prefix[static_cast<int>(dir)],
 		bitmap_img_ids[static_cast<int>(dir)][bitmap_img_id]);

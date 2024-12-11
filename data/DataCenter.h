@@ -10,7 +10,7 @@
 class Player;
 class Monster;
 /*-----Revise start-----*/
-class Hero;
+// class Hero;
 class Tank;
 class Obstacle;
 class Bullet;
@@ -91,7 +91,7 @@ public:
 	 * @see Tower
 	 */
 	/*-----Revise start-----*/
-	Hero *hero;
+	// Hero *hero;
 	std::vector<Tank*> tanks;
 	std::vector<Obstacle*> obstacles;
 	std::vector<std::unique_ptr<Bullet>> bullets;
