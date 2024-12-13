@@ -55,11 +55,15 @@ private:
     bool moving_forward;
     bool is_obstacle_overlap;
     int hp;
+    int max_hp;
+    int num_bullets;
     int id;
     
     int width, height;                  // the width and height of the hero image
     std::map<TankState, std::string> pngPath;
 
     float stun_timer = 0;
+    float hp_timer = 3;
+    float bullet_timer = 1.5;
 };
 #endif

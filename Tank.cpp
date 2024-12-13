@@ -20,7 +20,7 @@ namespace TankSetting {
 Tank::Tank(const Point &p, const ControlScheme &controlScheme) 
  : position(p), controlScheme(controlScheme) , state(TankState::ALIVE),
       rotation_angle(0.0f), rotation_left(1), angular_speed(0.1), speed(3.5),
-      moving_forward(false), is_obstacle_overlap(false), hp(7200)
+      moving_forward(false), is_obstacle_overlap(false), hp(7200), max_hp(7200), num_bullets(6)
       { if (controlScheme.rotate == ALLEGRO_KEY_W) id = 1; else id = 2; }
 
 void Tank::init() {
@@ -43,6 +43,8 @@ void Tank::init() {
 }
 
 void Tank::fire_bullet() {
+    if (num_bullets <= 0) return;
+    num_bullets--;
     DataCenter *DC = DataCenter::get_instance();
 
     float bullet_x = shape->center_x() - (width / 2) * cos(rotation_angle);
@@ -51,8 +53,8 @@ void Tank::fire_bullet() {
     DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, id));
     DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.08f, id));
     DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.08f, id));
-    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.16f, id));
-    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.16f, id));
+    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.04f, id));
+    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.04f, id));
 
 }
 
@@ -67,6 +69,12 @@ void Tank::update() {
 
     if (hp <= 0) state = TankState::DEAD;
 
+    if (num_bullets < 6) bullet_timer -= (1 / DC->FPS);
+    if (bullet_timer <= 0) {
+        num_bullets++;
+        bullet_timer = 1.5;
+    }
+
     switch (state)
     {
         case TankState::ALIVE: {
@@ -75,6 +83,7 @@ void Tank::update() {
             speed = 3.5;
             if (DC->key_state[controlScheme.rotate]) {
                 // 按下 W 鍵，坦克向前移動，且發射子彈
+                hp_timer = 3;
                 moving_forward = true;
                 if (!DC->prev_key_state[controlScheme.rotate]) {
                     rotation_left *= -1;
@@ -84,6 +93,12 @@ void Tank::update() {
                 stun();
             } else {
                 // 沒有按下 W 鍵，坦克停止移動
+                hp_timer -= (1 / DC->FPS);
+                if (hp_timer <= 0) {
+                    if (hp <= (max_hp - 300)) hp += 300;
+                    else hp = max_hp;
+                    hp_timer = 3;
+                }
                 moving_forward = false;
             }
             break;
@@ -170,10 +185,10 @@ void Tank::draw() {
     // 繪製血條
     float health_bar_width = 50.0;  // 血條的最大寬度
     float health_bar_height = 10.0; // 血條的高度
-    float health_percentage = static_cast<float>(hp) / 7200;
+    float health_percentage = static_cast<float>(hp) / max_hp;
 
     float bar_x = position.x + 4; // 血條的左上角 X
-    float bar_y = position.y - 15;                  // 血條的左上角 Y
+    float bar_y = position.y - 30;                  // 血條的左上角 Y
     float bar_length = health_bar_width * health_percentage;
 
     float corner_radius = health_bar_height / 2;    // 圓角半徑
@@ -200,13 +215,49 @@ void Tank::draw() {
     bar_x, bar_y, 
     bar_x + health_bar_width, bar_y + health_bar_height, 
     corner_radius, corner_radius, 
-    al_map_rgb(0, 0, 0), 1
+    al_map_rgb(100, 100, 100), 1
     );
 
     // 寫下血量
     FontCenter *FC = FontCenter::get_instance();
 	al_draw_textf(
         FC->courier_new[FontSize::SMALL], al_map_rgb(0, 0, 0),
-		bar_x + 25, bar_y - 7,
+		bar_x + 25, bar_y - 6,
 		ALLEGRO_ALIGN_CENTRE, "%d", hp);
+
+    float bullet_width = 10.0f;          // 子彈條的寬度
+    float bullet_height = 10.0f;         // 子彈條的高度
+    float bullet_gap = 1.0f;            // 子彈條的間距
+    float bullet_y = bar_y + 15;        // 子彈條的起始 Y 位置
+
+    for (int i = 0; i < 6; ++i) {
+        float bullet_x = bar_x + i * (bullet_width + bullet_gap); // 計算每個子彈條的 X 位置
+
+        if (i < num_bullets) {
+            // 裝備的子彈：綠色
+            al_draw_filled_rounded_rectangle(
+                bullet_x, bullet_y,
+                bullet_x + bullet_width, bullet_y + bullet_height,
+                corner_radius, corner_radius,
+                al_map_rgb(205, 107, 52)
+            );
+        } else {
+            // 未裝備的子彈：灰色
+            al_draw_filled_rounded_rectangle(
+                bullet_x, bullet_y,
+                bullet_x + bullet_width, bullet_y + bullet_height,
+                corner_radius, corner_radius,
+                al_map_rgb(100, 100, 100)
+            );
+        }
+
+        // 畫出邊框
+        // al_draw_rounded_rectangle(
+        //     bullet_x, bullet_y,
+        //     bullet_x + bullet_width, bullet_y + bullet_height,
+        //     corner_radius, corner_radius,
+        //     al_map_rgb(0, 0, 0), 1.0f
+        // );
+    }
+
 }
