@@ -2,6 +2,7 @@
 #include "data/DataCenter.h"
 #include "data/ImageCenter.h"
 #include "shapes/Circle.h"
+#include "shapes/Rectangle.h"
 #include "shapes/Point.h"
 #include <algorithm>
 #include <allegro5/bitmap_draw.h>
@@ -11,7 +12,7 @@
 Bullet::Bullet(double x, double y, const float& angle, int owner_id) {
     ImageCenter *IC = ImageCenter::get_instance();
     this->fly_dist = 100000;
-    this->dmg = 10;
+    this->dmg = 1280;
     this->owner_id = owner_id;
     this->speed = 1000;
     rotation_angle = angle;
@@ -19,7 +20,10 @@ Bullet::Bullet(double x, double y, const float& angle, int owner_id) {
     vx = speed * cos(angle);
     vy = speed * sin(angle);
 
-    shape.reset(new Circle{x, y, double(5)});
+    width = al_get_bitmap_width(bitmap);
+    height = al_get_bitmap_height(bitmap);
+
+    shape.reset(new Rectangle{x, y, x + width, y + height});
 
     if (!bitmap) {
         std::cerr << "failed to load bullet image." << std::endl;

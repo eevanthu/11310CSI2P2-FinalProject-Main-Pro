@@ -6,11 +6,16 @@
 #include "shapes/Point.h"
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 namespace ObstacleSetting
 {
     static constexpr char png_root_path[50] = "./assets/image/obstacle";
     static constexpr char png_postfix[][10] = {
         "exist",
+        "orange",
+        "blue",
+        "pink",
+        "gray",
         "destroyed"
     };
 }
@@ -34,8 +39,37 @@ void Obstacle::init()
     ALLEGRO_BITMAP *bitmap = IC->get(pngPath[state]);
     width = al_get_bitmap_width(bitmap);
     height = al_get_bitmap_height(bitmap);
-    shape.reset(new Rectangle{position.x, position.y, position.x + width, position.y + height});
+    shape.reset(new Rectangle{position.x, position.y, position.x + width, position.y + width});
 
+}
+
+void Obstacle::set_state()
+{
+    int random = rand() % 100;
+    switch(state) {
+        case ObstacleState::EXIST:
+            if (random < 10) state = ObstacleState::STONE;
+            else if (random < 40) state = ObstacleState::ORANGE;
+            else if (random < 60) state = ObstacleState::BLUE;
+            else if (random < 80) state = ObstacleState::PINK;
+            else state = ObstacleState::EXIST;
+            break;
+        case ObstacleState::ORANGE:
+            state = ObstacleState::BLUE;
+            break;
+        case ObstacleState::BLUE:
+            state = ObstacleState::PINK;
+            break;
+        case ObstacleState::PINK:
+            state = ObstacleState::DESTROYED;
+            break;
+        case ObstacleState::DESTROYED:
+            // state = ObstacleState::EXIST;
+            break;
+        case ObstacleState::STONE:
+            break;
+        default: break;
+    }
 }
 
 void Obstacle::draw()

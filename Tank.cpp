@@ -1,6 +1,8 @@
 #include "Tank.h"
+#include <allegro5/allegro_primitives.h>
 #include "data/DataCenter.h"
 #include "data/ImageCenter.h"
+#include "data/FontCenter.h"
 #include "algif5/algif.h"
 #include "shapes/Rectangle.h"
 #include "./shapes/Point.h"
@@ -18,7 +20,7 @@ namespace TankSetting {
 Tank::Tank(const Point &p, const ControlScheme &controlScheme) 
  : position(p), controlScheme(controlScheme) , state(TankState::ALIVE),
       rotation_angle(0.0f), rotation_left(1), angular_speed(0.1), speed(3.5),
-      moving_forward(false), is_obstacle_overlap(false) 
+      moving_forward(false), is_obstacle_overlap(false), hp(7200)
       { if (controlScheme.rotate == ALLEGRO_KEY_W) id = 1; else id = 2; }
 
 void Tank::init() {
@@ -47,6 +49,11 @@ void Tank::fire_bullet() {
     float bullet_y = shape->center_y() - (width / 2) * sin(rotation_angle);
 
     DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, id));
+    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.08f, id));
+    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.08f, id));
+    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.16f, id));
+    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.16f, id));
+
 }
 
 void Tank::stun() {
@@ -57,6 +64,8 @@ void Tank::stun() {
 
 void Tank::update() {
     DataCenter *DC = DataCenter::get_instance();
+
+    if (hp <= 0) state = TankState::DEAD;
 
     switch (state)
     {
@@ -116,6 +125,8 @@ void Tank::update() {
         float dy = speed * sin(radian);
         
         if (!is_obstacle_overlap) {
+            position.x -= dx;
+            position.y -= dy;
             shape->update_center_x(shape->center_x() - dx);
             shape->update_center_y(shape->center_y() - dy);
         } else is_obstacle_overlap = false;
@@ -151,7 +162,51 @@ void Tank::draw() {
         shape->center_y(),
         rotation_angle,
         0);
+
+    if (state == TankState::DEAD) return;
     // for (auto &bullet : bullets) {
     //     bullet->draw();
     // }
+    // 繪製血條
+    float health_bar_width = 50.0;  // 血條的最大寬度
+    float health_bar_height = 10.0; // 血條的高度
+    float health_percentage = static_cast<float>(hp) / 7200;
+
+    float bar_x = position.x + 4; // 血條的左上角 X
+    float bar_y = position.y - 15;                  // 血條的左上角 Y
+    float bar_length = health_bar_width * health_percentage;
+
+    float corner_radius = health_bar_height / 2;    // 圓角半徑
+
+    ALLEGRO_COLOR health_color = al_map_rgb(255 * (1 - health_percentage), 255 * health_percentage, 0);
+
+    // 繪製血條背景（灰色）
+    al_draw_filled_rounded_rectangle(
+        bar_x, bar_y, 
+        bar_x + health_bar_width, bar_y + health_bar_height, 
+        corner_radius, corner_radius, 
+        al_map_rgb(100, 100, 100)
+    );
+
+    // 繪製血條（紅色）
+    al_draw_filled_rounded_rectangle(
+        bar_x, bar_y, 
+        bar_x + bar_length, bar_y + health_bar_height, 
+        corner_radius, corner_radius, 
+        health_color
+    );
+
+    al_draw_rounded_rectangle(
+    bar_x, bar_y, 
+    bar_x + health_bar_width, bar_y + health_bar_height, 
+    corner_radius, corner_radius, 
+    al_map_rgb(0, 0, 0), 1
+    );
+
+    // 寫下血量
+    FontCenter *FC = FontCenter::get_instance();
+	al_draw_textf(
+        FC->courier_new[FontSize::SMALL], al_map_rgb(0, 0, 0),
+		bar_x + 25, bar_y - 7,
+		ALLEGRO_ALIGN_CENTRE, "%d", hp);
 }

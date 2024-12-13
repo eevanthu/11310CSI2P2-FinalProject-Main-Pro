@@ -25,6 +25,7 @@ private:
     float rotation_angle;
     int dmg;
     int owner_id;
+    int width, height;
     ALLEGRO_BITMAP *bitmap;
 };
 

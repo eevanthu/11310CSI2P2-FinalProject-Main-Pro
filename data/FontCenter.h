@@ -30,6 +30,8 @@ public:
 public:
 	std::map<int, ALLEGRO_FONT*> caviar_dreams;
 	std::map<int, ALLEGRO_FONT*> courier_new;
+	std::map<int, ALLEGRO_FONT*> boxy_bold;
+	std::map<int, ALLEGRO_FONT*> arial_bold;
 private:
 	FontCenter() {}
 };

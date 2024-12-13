@@ -87,7 +87,7 @@ void OperationCenter::_update_tank_bullet() {
             if (bullets[i]->shape->overlap(*(tanks[j]->shape)))
             {
                 // 子彈擊中坦克的行為處理
-                tanks[j]->stun(); // 將坦克設為死亡狀態
+                tanks[j]->decrease_hp(bullets[i]->get_dmg());
                 bullets[i]->set_fly_dist(0);         // 設定子彈為無效
             }
         }
@@ -101,11 +101,14 @@ void OperationCenter::_update_tank_obstacle() {
 
     for (size_t i = 0; i < tanks.size(); ++i) {
         for (size_t j = 0; j < obstacles.size(); ++j) {
+			if (obstacles[j]->get_state() == ObstacleState::DESTROYED) {
+				continue;
+			}
 			bool is_overlap = tanks[i]->shape->overlap(*(obstacles[j]->shape));
             if (is_overlap) {
 				tanks[i]->set_obstacle_overlap(true);
                 // 簡單地反向退回一段距離
-                const float reverse_distance = 5.0; // 退回的距離
+                const float reverse_distance = 1.0; // 退回的距離
                 float local_dx = cos(tanks[i]->get_rotation_angle()) * reverse_distance;
                 float local_dy = sin(tanks[i]->get_rotation_angle()) * reverse_distance;
 				tanks[i]->set_position(Point{tanks[i]->shape->center_x() + local_dx, tanks[i]->shape->center_y() + local_dy});
@@ -122,7 +125,11 @@ void OperationCenter::_update_bullet_obstacle() {
     for (size_t i = 0; i < bullets.size(); ++i) {
         for (size_t j = 0; j < obstacles.size(); ++j) {
             if (bullets[i]->shape->overlap(*(obstacles[j]->shape))) {
+				if (obstacles[j]->get_state() == ObstacleState::DESTROYED) {
+				continue;
+				}
 				bullets[i]->set_fly_dist(0);
+				obstacles[j]->set_state();
             }
         }
     }

@@ -159,7 +159,7 @@ void Game::game_init()
 	ControlScheme player1Controls = {ALLEGRO_KEY_W, ALLEGRO_KEY_LEFT};
 	ControlScheme player2Controls = {ALLEGRO_KEY_UP, ALLEGRO_KEY_A};
 	Point tank1Pos = {DC->window_width / 2 - 700, 100};
-	Point tank2Pos = {DC->window_width / 2 + 700, 800};
+	Point tank2Pos = {DC->window_width / 2 + 700, 100};
     Tank* tank1 = new Tank(tank1Pos, player1Controls);
     Tank* tank2 = new Tank(tank2Pos, player2Controls);
     
@@ -169,11 +169,14 @@ void Game::game_init()
     DC->tanks.push_back(tank2);
 
 	// Create obstacles
-	for (int i = 10; i <= 20; i++) {
-		Point obstaclePos = {i * 30, DC->window_height / 2};
-		Obstacle* obstacle = new Obstacle(obstaclePos);
-		DC->obstacles.push_back(obstacle);
+	for (int i = 2; i <= 50; i++) {
+		for (int j = DC->window_height / 2; j <= DC->window_height - 60; j += 30) {
+			Point obstaclePos = {i * 30, j};
+			Obstacle* obstacle = new Obstacle(obstaclePos);
+			DC->obstacles.push_back(obstacle);
+		}
 	}
+
 
 	for (Tank* tank : DC->tanks) tank->init();
 	for (Obstacle* obstacle : DC->obstacles) obstacle->init();
@@ -276,7 +279,11 @@ bool Game::game_update()
         	else ++it;
     	}
 		// Maybe we need to update obstacles later
-		// for (Obstacle* obstacle : DC->obstacles) obstacle->update();
+		// for (Obstacle* obstacle : DC->obstacles) {
+		// 	if (obstacle->get_state() == ObstacleState::DESTROYED) {
+		// 		DC->obstacles.erase(obstacle);
+		// 	}
+		// }
 		/*-----I2P Revise end-----*/
 		if (state != STATE::START)
 		{
@@ -321,8 +328,8 @@ void Game::game_draw()
 			//DC->level->draw();
 			/*-----I2P Revise start-----*/
 			// DC->hero->draw();
-			for (Tank* tank : DC->tanks) tank->draw();
 			for (Obstacle* obstacle : DC->obstacles) obstacle->draw();
+			for (Tank* tank : DC->tanks) tank->draw();
 			for (auto &bullet : DC->bullets) {bullet->draw();}
 			/*-----I2P Revise end-----*/
 			ui->draw();

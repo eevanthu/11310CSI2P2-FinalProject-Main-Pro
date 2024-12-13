@@ -9,6 +9,10 @@
 enum class ObstacleState
 {
     EXIST,
+    ORANGE,
+    BLUE,
+    PINK,
+    STONE,
     DESTROYED,
     OBSTACLESTATE_MAX
 };
@@ -20,9 +24,11 @@ public:
     Obstacle(const Point &p);
     void init();
     void draw();
+    void set_state();
+    ObstacleState get_state() { return state; }
 
 private:
-    ObstacleState state = ObstacleState::EXIST; // the state of character
+    ObstacleState state; // the state of character
     // size and position
     int width, height;
     Point position;
