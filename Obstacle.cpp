@@ -16,6 +16,11 @@ namespace ObstacleSetting
         "blue",
         "pink",
         "gray",
+        "maxhp",
+        "tankspeed",
+        "numbullet",
+        "shield",
+        "penetrate",
         "destroyed"
     };
 }
@@ -49,22 +54,42 @@ void Obstacle::set_state()
     switch(state) {
         case ObstacleState::EXIST:
             if (random < 10) state = ObstacleState::STONE;
-            else if (random < 40) state = ObstacleState::ORANGE;
-            else if (random < 60) state = ObstacleState::BLUE;
-            else if (random < 80) state = ObstacleState::PINK;
-            else state = ObstacleState::EXIST;
+            else if (random < 100) state = ObstacleState::ORANGE;
             break;
         case ObstacleState::ORANGE:
-            state = ObstacleState::BLUE;
-            break;
-        case ObstacleState::BLUE:
-            state = ObstacleState::PINK;
+            if (random < 10) state = ObstacleState::STONE;
+            else if (random < 45) state = ObstacleState::ITEM_MAXHP;
+            else if (random < 100) state = ObstacleState::PINK;
             break;
         case ObstacleState::PINK:
-            state = ObstacleState::DESTROYED;
+            if (random < 10) state = ObstacleState::STONE;
+            else if (random < 35) state = ObstacleState::ITEM_TANKSPEED;
+            else if (random < 70) state = ObstacleState::ITEM_NUMBULLET;
+            else if (random < 71) state = ObstacleState::ITEM_SHIELD;
+            else if (random < 100) state = ObstacleState::BLUE;
+            break;
+        case ObstacleState::BLUE:
+            if (random < 1) state = ObstacleState::STONE;
+            else if (random < 99) state = ObstacleState::ITEM_PENETRATE;
+            else if (random < 100) state = ObstacleState::DESTROYED;
             break;
         case ObstacleState::DESTROYED:
             // state = ObstacleState::EXIST;
+            break;
+        case ObstacleState::ITEM_MAXHP:
+            state = ObstacleState::DESTROYED;
+            break;
+        case ObstacleState::ITEM_TANKSPEED:
+            state = ObstacleState::DESTROYED;
+            break;
+        case ObstacleState::ITEM_NUMBULLET:
+            state = ObstacleState::DESTROYED;
+            break;
+        case ObstacleState::ITEM_SHIELD:
+            state = ObstacleState::DESTROYED;
+            break;
+        case ObstacleState::ITEM_PENETRATE:
+            state = ObstacleState::DESTROYED;
             break;
         case ObstacleState::STONE:
             break;

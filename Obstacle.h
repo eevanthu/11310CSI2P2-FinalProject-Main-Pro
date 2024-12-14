@@ -13,6 +13,11 @@ enum class ObstacleState
     BLUE,
     PINK,
     STONE,
+    ITEM_MAXHP,
+    ITEM_TANKSPEED,
+    ITEM_NUMBULLET,
+    ITEM_SHIELD,
+    ITEM_PENETRATE,
     DESTROYED,
     OBSTACLESTATE_MAX
 };

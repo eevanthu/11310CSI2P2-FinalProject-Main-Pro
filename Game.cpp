@@ -303,7 +303,8 @@ bool Game::game_update()
 	case STATE::END:
 	{
 		debug_log("<Game> state: change to END\n");
-		return false;
+		state = STATE::CHOOSE;
+		// return false;
 	}
 	}
 	// If the game is not paused, we should progress update.

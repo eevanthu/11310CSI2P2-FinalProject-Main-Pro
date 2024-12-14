@@ -9,7 +9,7 @@
 class Bullet : public Object
 {
 public:
-    Bullet(double x, double y, const float& angle ,int owner_id);
+    Bullet(double x, double y, const float& angle ,int owner_id, int is_penetrate);
     void update();
     void draw();
     void set_fly_dist(double dist) { fly_dist = dist; }
@@ -17,6 +17,7 @@ public:
     bool is_out_of_range() const;
     const double &get_fly_dist() const { return fly_dist; }
     const int &get_dmg() const { return dmg; }
+    int is_penetrate;
 private:
     double vx;
     double vy;

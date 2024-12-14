@@ -9,12 +9,13 @@
 #include <iostream>
 #include <cmath>
 
-Bullet::Bullet(double x, double y, const float& angle, int owner_id) {
+Bullet::Bullet(double x, double y, const float& angle, int owner_id, int is_penetrate) {
     ImageCenter *IC = ImageCenter::get_instance();
     this->fly_dist = 100000;
     this->dmg = 1280;
     this->owner_id = owner_id;
     this->speed = 1000;
+    this->is_penetrate = is_penetrate;
     rotation_angle = angle;
     bitmap = IC->get("./assets/image/bullet.png");
     vx = speed * cos(angle);
@@ -22,6 +23,7 @@ Bullet::Bullet(double x, double y, const float& angle, int owner_id) {
 
     width = al_get_bitmap_width(bitmap);
     height = al_get_bitmap_height(bitmap);
+
 
     shape.reset(new Rectangle{x, y, x + width, y + height});
 

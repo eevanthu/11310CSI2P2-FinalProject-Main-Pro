@@ -15,13 +15,14 @@
 
 namespace TankSetting {
     static constexpr char png_root_path[50] = "./assets/image/tank";
-    static constexpr char png_postfix[][10] = {"alive", "alive", "alive", "dead"};
+    static constexpr char png_postfix[][10] = {"alive", "triple","alive", "alive", "dead"};
 }
 
 Tank::Tank(const Point &p, const ControlScheme &controlScheme) 
  : position(p), controlScheme(controlScheme) , state(TankState::ALIVE),
       rotation_angle(0.0f), rotation_left(1), angular_speed(0.1), speed(3.5),
-      moving_forward(false), is_obstacle_overlap(false), hp(7200), max_hp(7200), num_bullets(6)
+      moving_forward(false), is_obstacle_overlap(false), hp(7200), max_hp(7200), 
+      num_bullets(6), num_shield(0), num_penerate(0)
       { if (controlScheme.rotate == ALLEGRO_KEY_W) id = 1; else id = 2; }
 
 void Tank::init() {
@@ -45,18 +46,32 @@ void Tank::init() {
 
 void Tank::fire_bullet() {
     if (num_bullets <= 0) return;
-    num_bullets--;
     DataCenter *DC = DataCenter::get_instance();
 
     float bullet_x = shape->center_x() - (width / 2) * cos(rotation_angle);
     float bullet_y = shape->center_y() - (width / 2) * sin(rotation_angle);
 
-    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, id));
-    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.08f, id));
-    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.08f, id));
-    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.04f, id));
-    DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.04f, id));
-
+    if (state == TankState::TRIPLEBULLET) {
+        if (num_penerate > 0) {
+            num_penerate--;
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, id, 1));
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.04f, id, 1));
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.04f, id, 1));
+        } else {
+            num_bullets--;
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, id, 0));
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.04f, id, 0));
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.04f, id, 0));
+        }
+    } else {
+        if (num_penerate > 0) {
+            num_penerate--;
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, id, 1));
+        } else {
+            num_bullets--;
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, id, 0));
+        }
+    }
 }
 
 void Tank::stun() {
@@ -78,10 +93,15 @@ void Tank::update() {
 
     switch (state)
     {
-        case TankState::ALIVE: {
+        case TankState::TRIPLEBULLET : {
+            triple_bullet_timer -= (1 / DC->FPS);
+            if (triple_bullet_timer <= 0) {
+                state = TankState::ALIVE;
+            }
+        }
+        case TankState::ALIVE : {
             stun_timer = 0;
             angular_speed = 0.08f;
-            speed = 3.5;
             if (DC->key_state[controlScheme.rotate]) {
                 // 按下 W 鍵，坦克向前移動，且發射子彈
                 hp_timer = 3;
@@ -249,7 +269,7 @@ void Tank::draw() {
     float bullet_gap = 1.0f;            // 子彈條的間距
     float bullet_y = bar_y + 15;        // 子彈條的起始 Y 位置
 
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 6 + num_penerate; ++i) {
         float bullet_x = bar_x + i * (bullet_width + bullet_gap); // 計算每個子彈條的 X 位置
 
         if (i < num_bullets) {
@@ -260,13 +280,21 @@ void Tank::draw() {
                 corner_radius, corner_radius,
                 al_map_rgb(205, 107, 52)
             );
-        } else {
+        } else if (i < 6) {
             // 未裝備的子彈：灰色
             al_draw_filled_rounded_rectangle(
                 bullet_x, bullet_y,
                 bullet_x + bullet_width, bullet_y + bullet_height,
                 corner_radius, corner_radius,
                 al_map_rgb(100, 100, 100)
+            );
+        } else {
+            // 穿透子彈：藍色
+            al_draw_filled_rounded_rectangle(
+                bullet_x, bullet_y,
+                bullet_x + bullet_width, bullet_y + bullet_height,
+                corner_radius, corner_radius,
+                al_map_rgb(0, 0, 255)
             );
         }
 

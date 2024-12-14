@@ -9,6 +9,7 @@
 enum class TankState
 {
     ALIVE,
+    TRIPLEBULLET,
     STOPPED,
     STUNNED,
     DEAD,
@@ -37,7 +38,12 @@ public:
         shape->update_center_x(p.x);
         shape->update_center_y(p.y); }
     void set_state(TankState state) { this->state = state; }
+    void set_max_hp(float rate) { max_hp = max_hp * (1 + rate); }
+    void set_speed() { if (speed < 10) speed += 1; }
+    void set_triple_timer() {triple_bullet_timer = 5;}
     void set_obstacle_overlap(bool is_overlap) { is_obstacle_overlap = is_overlap; }
+    int set_num_shield(int num) { num_shield += num; return num_shield; }
+    void set_num_penerate(int num) { num_penerate += num;}
     float get_rotation_angle() { return rotation_angle; }
     double get_position_x() { return position.x; }
     double get_position_y() { return position.y; }
@@ -58,12 +64,15 @@ private:
     int hp;
     int max_hp;
     int num_bullets;
+    int num_shield;
+    int num_penerate = 0;
     int id;
     
     int width, height;                  // the width and height of the hero image
     std::map<TankState, std::string> pngPath;
 
     float stun_timer = 0;
+    float triple_bullet_timer = 0;
     float hp_timer = 3;
     float bullet_timer = 1.5;
 };
