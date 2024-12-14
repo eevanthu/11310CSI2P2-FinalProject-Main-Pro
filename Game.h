@@ -24,7 +24,10 @@ private:
 	 * @see Game::game_update()
 	 */
 	enum class STATE {
-		START, // -> LEVEL
+		INIT, // -> LEVEL
+		CHOOSE, //CHOOSE MODE
+		SCORE, //SCORE MODE
+		KILL, //KILL MODE
 		LEVEL, // -> PAUSE, END
 		PAUSE, // -> LEVEL
 		END

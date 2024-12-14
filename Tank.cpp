@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "Tank.h"
 #include <allegro5/allegro_primitives.h>
 #include "data/DataCenter.h"
@@ -37,8 +38,8 @@ void Tank::init() {
 
     // 設定圖片大小
     ALLEGRO_BITMAP *bitmap = IC->get(pngPath[state]);
-    width = al_get_bitmap_width(bitmap);
-    height = al_get_bitmap_height(bitmap);
+    width = al_get_bitmap_width(bitmap) - 25;
+    height = al_get_bitmap_height(bitmap) - 25;
     shape.reset(new Rectangle{position.x, position.y, position.x + width, position.y + height});
 }
 
@@ -103,7 +104,11 @@ void Tank::update() {
             }
             break;
         };
-        case TankState::DEAD: break;
+        case TankState::DEAD: 
+        {
+            rotation_angle = 0;
+            break;
+        }
         case TankState::STOPPED: {
             speed = 0;
             if (DC->key_state[controlScheme.rotate] && !DC->prev_key_state[controlScheme.rotate])
@@ -139,6 +144,20 @@ void Tank::update() {
         float dx = speed * cos(radian);
         float dy = speed * sin(radian);
         
+        //tank won't go out
+        if(position.x <= 0 && dx > 0){
+            dx = 0;
+        }
+        if(position.x > 1545 && dx <= 0){
+            dx = 0;
+        }
+        if(position.y <= 0 && dy > 0){
+            dy = 0;
+        }
+        if(position.y >= 865 && dy <= 0){
+            dy = 0;
+        }
+        
         if (!is_obstacle_overlap) {
             position.x -= dx;
             position.y -= dy;
@@ -154,7 +173,7 @@ void Tank::update() {
             rotation_angle += 2 * M_PI;
         }
     }
-
+    
     // for (auto it = bullets.begin(); it != bullets.end(); ) {
     //     (*it)->update();
     //     if ((*it)->get_fly_dist() <= 0) it = bullets.erase(it);

@@ -24,6 +24,8 @@
 constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
 constexpr char game_start_sound_path[] = "./assets/sound/growl.wav";
 constexpr char background_img_path[] = "./assets/image/background.jpg";
+constexpr char initial_img_path[] = "./assets/image/initial.jpg";
+constexpr char modechoose_img_path[] = "./assets/image/ModeChoose.jpg";
 constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
 
 /**
@@ -158,8 +160,8 @@ void Game::game_init()
 	// 創建兩台坦克並初始化
 	ControlScheme player1Controls = {ALLEGRO_KEY_W, ALLEGRO_KEY_LEFT};
 	ControlScheme player2Controls = {ALLEGRO_KEY_UP, ALLEGRO_KEY_A};
-	Point tank1Pos = {DC->window_width / 2 - 700, 100};
-	Point tank2Pos = {DC->window_width / 2 + 700, 100};
+	Point tank1Pos = {20, 450};
+	Point tank2Pos = {1535, 450};
     Tank* tank1 = new Tank(tank1Pos, player1Controls);
     Tank* tank2 = new Tank(tank2Pos, player2Controls);
     
@@ -169,8 +171,8 @@ void Game::game_init()
     DC->tanks.push_back(tank2);
 
 	// Create obstacles
-	for (int i = 2; i <= 50; i++) {
-		for (int j = DC->window_height / 2; j <= DC->window_height - 60; j += 30) {
+	for (int i = 3; i <= 50; i++) {
+		for (int j = 0; j <= DC->window_height; j += 30) {
 			Point obstaclePos = {i * 30, j};
 			Obstacle* obstacle = new Obstacle(obstaclePos);
 			DC->obstacles.push_back(obstacle);
@@ -184,9 +186,9 @@ void Game::game_init()
 	/*-----I2P Revise end-----*/
 
 	// game start
-	background = IC->get(background_img_path);
-	debug_log("Game state: change to START\n");
-	state = STATE::START;
+	background = IC->get(initial_img_path);
+	debug_log("Game state: change to INIT\n");
+	state = STATE::INIT;
 	al_start_timer(timer);
 }
 
@@ -201,33 +203,67 @@ bool Game::game_update()
 	DataCenter *DC = DataCenter::get_instance();
 	OperationCenter *OC = OperationCenter::get_instance();
 	SoundCenter *SC = SoundCenter::get_instance();
-	static ALLEGRO_SAMPLE_INSTANCE *background = nullptr;
+	ImageCenter *IC = ImageCenter::get_instance();
+	ALLEGRO_SAMPLE_INSTANCE *background2 = nullptr;
 
 	switch (state)
 	{
-	case STATE::START:
+	case STATE::INIT:
 	{
-		static bool is_played = false;
 		static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
-		if (!is_played)
+		if (DC->mouse_state[1])
 		{
 			instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			//DC->level->load_level(1);
-			is_played = true;
+			debug_log("<Game> state: change to CHOOSE\n");
+			background = IC->get(modechoose_img_path);
+			state = STATE::CHOOSE;
+			DC->mouse_state[1] = false;
 		}
-
-		if (!SC->is_playing(instance))
+		else
 		{
-			debug_log("<Game> state: change to LEVEL\n");
-			state = STATE::LEVEL;
+			instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
 		}
 		break;
+	}
+	case STATE::CHOOSE:
+	{
+		static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
+		if (DC->mouse_state[1] && DC->mouse.x < 800)
+		{
+			instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
+			//DC->level->load_level(1);
+			debug_log("<Game> state: change to SCORE\n");
+			background = IC->get(background_img_path);
+			state = STATE::SCORE;
+		}
+		else if (DC->mouse_state[1] && DC->mouse.x > 800)
+		{
+			instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
+			//DC->level->load_level(1);
+			debug_log("<Game> state: change to KILL\n");
+			background = IC->get(background_img_path);
+			state = STATE::KILL;
+		}
+		else 
+		{
+			instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
+		}
+		break;
+	}
+	case STATE::SCORE:
+	{
+		state = STATE::LEVEL;
+	}
+	case STATE::KILL:
+	{
+		state = STATE::LEVEL;
 	}
 	case STATE::LEVEL:
 	{
 		if (DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P])
 		{
-			SC->toggle_playing(background);
+			SC->toggle_playing(background2);
 			debug_log("<Game> state: change to PAUSE\n");
 			state = STATE::PAUSE;
 		}
@@ -244,16 +280,21 @@ bool Game::game_update()
 		static bool BGM_played = false;
 		if (!BGM_played)
 		{
-			background = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
+			background2 = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
 			BGM_played = true;
 		}
+		for (Tank* tank : DC->tanks) {
+			if (tank->get_state() == TankState::DEAD) {
+				state = STATE::END;
+			}
+		};
 		break;
 	}
 	case STATE::PAUSE:
 	{
 		if (DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P])
 		{
-			SC->toggle_playing(background);
+			SC->toggle_playing(background2);
 			debug_log("<Game> state: change to LEVEL\n");
 			state = STATE::LEVEL;
 		}
@@ -261,6 +302,7 @@ bool Game::game_update()
 	}
 	case STATE::END:
 	{
+		debug_log("<Game> state: change to END\n");
 		return false;
 	}
 	}
@@ -285,7 +327,7 @@ bool Game::game_update()
 		// 	}
 		// }
 		/*-----I2P Revise end-----*/
-		if (state != STATE::START)
+		if (state != STATE::INIT)
 		{
 			//DC->level->update();
 			OC->update();
@@ -323,7 +365,7 @@ void Game::game_draw()
 				DC->window_width, DC->window_height,
 				al_map_rgb(100, 100, 100));
 		// user interface
-		if (state != STATE::START)
+		if (state != STATE::INIT && state != STATE::CHOOSE)
 		{
 			//DC->level->draw();
 			/*-----I2P Revise start-----*/
@@ -338,8 +380,20 @@ void Game::game_draw()
 	}
 	switch (state)
 	{
-	case STATE::START:
+	case STATE::INIT:
 	{
+	}
+	case STATE::CHOOSE:
+	{
+
+	}
+	case STATE::SCORE:
+	{
+
+	}
+	case STATE::KILL:
+	{
+
 	}
 	case STATE::LEVEL:
 	{

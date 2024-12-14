@@ -42,6 +42,7 @@ public:
     double get_position_x() { return position.x; }
     double get_position_y() { return position.y; }
     int get_id() const { return id; }
+    TankState get_state() const { return state; }
     void decrease_hp(int demage) { if (hp > demage) this->hp -= demage;  else this->hp = 0; }
 private:
     // size, position and path
