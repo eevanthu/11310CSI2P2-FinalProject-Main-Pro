@@ -74,6 +74,6 @@ private:
     float stun_timer = 0;
     float triple_bullet_timer = 0;
     float hp_timer = 3;
-    float bullet_timer = 1.5;
+    float bullet_timer = 0.1;
 };
 #endif

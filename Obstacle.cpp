@@ -25,7 +25,7 @@ namespace ObstacleSetting
     };
 }
 
-Obstacle::Obstacle(const Point &p) : state(ObstacleState::EXIST), position(p) {}
+Obstacle::Obstacle(const Point &p, ObstacleState state) : state(state), position(p) {}
 
 void Obstacle::init()
 {

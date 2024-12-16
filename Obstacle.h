@@ -26,7 +26,7 @@ class Obstacle : public Object
 {
 
 public:
-    Obstacle(const Point &p);
+    Obstacle(const Point &p, ObstacleState state);
     void init();
     void draw();
     void set_state();

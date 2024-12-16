@@ -171,10 +171,10 @@ void Game::game_init()
     DC->tanks.push_back(tank2);
 
 	// Create obstacles
-	for (int i = 3; i <= 50; i++) {
-		for (int j = 0; j <= DC->window_height; j += 30) {
-			Point obstaclePos = {i * 30, j};
-			Obstacle* obstacle = new Obstacle(obstaclePos);
+	for (int i = 3; i <= 40; i++) {
+		for (int j = 0; j <= DC->window_height; j += 32) {
+			Point obstaclePos = {i * 32, j};
+			Obstacle* obstacle = new Obstacle(obstaclePos, ObstacleState::EXIST);
 			DC->obstacles.push_back(obstacle);
 		}
 	}

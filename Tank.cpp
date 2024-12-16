@@ -6,6 +6,7 @@
 #include "data/FontCenter.h"
 #include "algif5/algif.h"
 #include "shapes/Rectangle.h"
+#include "shapes/Circle.h"
 #include "./shapes/Point.h"
 #include "Bullet.h"
 #include <iostream>
@@ -42,6 +43,7 @@ void Tank::init() {
     width = al_get_bitmap_width(bitmap);
     height = al_get_bitmap_height(bitmap);
     shape.reset(new Rectangle{position.x, position.y, position.x + width, position.y + height});
+    // shape.reset(new Circle{int(position.x + width / 2), int(position.y + height / 2), width / 2});
 }
 
 void Tank::fire_bullet() {
@@ -88,7 +90,7 @@ void Tank::update() {
     if (num_bullets < 6) bullet_timer -= (1 / DC->FPS);
     if (bullet_timer <= 0) {
         num_bullets++;
-        bullet_timer = 1.5;
+        bullet_timer = 0.1; // Important
     }
 
     switch (state)
