@@ -39,8 +39,8 @@ void Tank::init() {
 
     // 設定圖片大小
     ALLEGRO_BITMAP *bitmap = IC->get(pngPath[state]);
-    width = al_get_bitmap_width(bitmap) - 25;
-    height = al_get_bitmap_height(bitmap) - 25;
+    width = al_get_bitmap_width(bitmap);
+    height = al_get_bitmap_height(bitmap);
     shape.reset(new Rectangle{position.x, position.y, position.x + width, position.y + height});
 }
 
