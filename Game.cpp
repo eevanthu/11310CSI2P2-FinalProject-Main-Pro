@@ -286,7 +286,7 @@ bool Game::game_update()
 			// 將坦克加入 DataCenter 的 tanks 向量
 			DC->tanks.push_back(tank1);
 			DC->tanks.push_back(tank2);
-			for (Tank* tank : DC->tanks) tank->init();
+			for (Tank* tank : DC->tanks) {tank->init();	tank->mode = 0;}
 			tank_is_created_at_game = true;
 			debug_log("call_tank\n");
 		}
@@ -318,7 +318,7 @@ bool Game::game_update()
 			// 將坦克加入 DataCenter 的 tanks 向量
 			DC->tanks.push_back(tank1);
 			DC->tanks.push_back(tank2);
-			for (Tank* tank : DC->tanks) tank->init();
+			for (Tank* tank : DC->tanks) {tank->init(); tank->mode = 1;}
 			tank_is_created_at_game = true;
 			debug_log("call_tank\n");
 		}
@@ -733,9 +733,13 @@ bool Game::game_update()
 				DC->obstacles.push_back(obstacle);
 			}
 			//right down end
-			for (Obstacle* obstacle : DC->obstacles) obstacle->init();
+			for (Obstacle* obstacle : DC->obstacles) {
+				obstacle->init();
+				obstacle->mode = 1;
+			}
 			obstacle_is_created_at_game = true;
 		}
+		mode = 1;
 		state = STATE::LEVEL;
 		break;
 	}
@@ -763,12 +767,20 @@ bool Game::game_update()
 			background2 = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
 			BGM_played = true;
 		}
-		for (Tank* tank : DC->tanks) {
-			if (tank->get_state() == TankState::DEAD) {
-				state = STATE::KILL_END;
+		if (mode == 0) {
+			for (Tank* tank : DC->tanks) {
+				if (tank->num_gem >= 10) {
+					state = STATE::KILL_END; // 一方獲得10個寶石，遊戲結束
+				}
 			}
-		};
-		break;
+		} else {
+			for (Tank* tank : DC->tanks) {
+				if (tank->get_state() == TankState::DEAD) {
+					state = STATE::KILL_END;
+				}
+			};
+			break;
+		}
 	}
 	case STATE::PAUSE:
 	{

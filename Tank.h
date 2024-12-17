@@ -39,7 +39,7 @@ public:
         shape->update_center_y(p.y); }
     void set_state(TankState state) { this->state = state; }
     void set_max_hp(float rate) { max_hp = max_hp * (1 + rate); }
-    void set_speed() { speed += 1; }
+    void set_speed() { if (speed <= 5) speed += 1; }
     void set_triple_timer() {triple_bullet_timer = 5;}
     void set_obstacle_overlap(bool is_overlap) { is_obstacle_overlap = is_overlap; }
     int set_num_shield(int num) { num_shield += num; return num_shield; }
@@ -50,6 +50,8 @@ public:
     int get_id() const { return id; }
     TankState get_state() const { return state; }
     void decrease_hp(int demage) { if (hp > demage) this->hp -= demage;  else this->hp = 0; }
+    int mode = 0; // 0: score mode, 1: kill mode
+    int num_gem = 0;
     
 private:
     // size, position and path
@@ -72,6 +74,8 @@ private:
     
     int width, height;                  // the width and height of the hero image
     std::map<TankState, std::string> pngPath;
+
+    int dx = 0, dy = 0;
 
     float stun_timer = 0;
     float triple_bullet_timer = 0;

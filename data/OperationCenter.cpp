@@ -134,7 +134,12 @@ void OperationCenter::_update_tank_obstacle() {
 					tanks[i]->set_num_penerate(3);
 					obstacles[j]->set_state();
 					continue;
+				} else if (obstacles[j]->get_state() == ObstacleState::GEM) {
+					tanks[i]->num_gem++;
+					obstacles[j]->set_state();
+					continue;
 				}
+				// 坦克與障礙物重疊，設定坦克為重疊狀態
 				tanks[i]->set_obstacle_overlap(true);
                 // 簡單地反向退回一段距離
                 const float reverse_distance = 1.5; // 退回的距離
@@ -160,6 +165,7 @@ void OperationCenter::_update_bullet_obstacle() {
 					case ObstacleState::ITEM_NUMBULLET:
 					case ObstacleState::ITEM_SHIELD:
 					case ObstacleState::ITEM_PENETRATE:
+					case ObstacleState::GEM:
 					case ObstacleState::DESTROYED:
 						continue;
 					default: 

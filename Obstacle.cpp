@@ -21,7 +21,8 @@ namespace ObstacleSetting
         "numbullet",
         "shield",
         "penetrate",
-        "destroyed"
+        "destroyed",
+        "gem"
     };
 }
 
@@ -54,23 +55,27 @@ void Obstacle::set_state()
     switch(state) {
         case ObstacleState::EXIST:
             if (random < 10) state = ObstacleState::STONE;
-            else if (random < 100) state = ObstacleState::ORANGE;
+            else if (random < 70) state = ObstacleState::ORANGE;
+            else if (random < 100) state = ObstacleState::DESTROYED;
             break;
         case ObstacleState::ORANGE:
             if (random < 10) state = ObstacleState::STONE;
-            else if (random < 45) state = ObstacleState::ITEM_MAXHP;
-            else if (random < 100) state = ObstacleState::PINK;
+            else if (random < 20) state = ObstacleState::ITEM_MAXHP;
+            else if (random < 60) state = ObstacleState::PINK;
+            else if (random < 100) state = ObstacleState::DESTROYED;
             break;
         case ObstacleState::PINK:
             if (random < 10) state = ObstacleState::STONE;
-            else if (random < 35) state = ObstacleState::ITEM_TANKSPEED;
-            else if (random < 70) state = ObstacleState::ITEM_NUMBULLET;
-            else if (random < 71) state = ObstacleState::ITEM_SHIELD;
-            else if (random < 100) state = ObstacleState::BLUE;
+            else if (random < 15) state = ObstacleState::ITEM_TANKSPEED;
+            else if (random < 30) state = ObstacleState::ITEM_NUMBULLET;
+            else if (random < 40) state = ObstacleState::ITEM_SHIELD;
+            else if (random < 80) state = ObstacleState::BLUE;
+            else if (random < 100) state = ObstacleState::DESTROYED;
             break;
         case ObstacleState::BLUE:
             if (random < 1) state = ObstacleState::STONE;
-            else if (random < 99) state = ObstacleState::ITEM_PENETRATE;
+            else if (random < 50) state = ObstacleState::ITEM_PENETRATE;
+            else if (random < 99 && mode == 0) state = ObstacleState::GEM;
             else if (random < 100) state = ObstacleState::DESTROYED;
             break;
         case ObstacleState::DESTROYED:
@@ -92,6 +97,9 @@ void Obstacle::set_state()
             state = ObstacleState::DESTROYED;
             break;
         case ObstacleState::STONE:
+            break;
+        case ObstacleState::GEM:
+            state = ObstacleState::DESTROYED;
             break;
         default: break;
     }

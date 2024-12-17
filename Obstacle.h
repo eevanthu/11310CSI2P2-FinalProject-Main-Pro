@@ -19,6 +19,7 @@ enum class ObstacleState
     ITEM_SHIELD,
     ITEM_PENETRATE,
     DESTROYED,
+    GEM,
     OBSTACLESTATE_MAX
 };
 
@@ -31,6 +32,7 @@ public:
     void draw();
     void set_state();
     ObstacleState get_state() { return state; }
+    int mode = 0;
 
 private:
     ObstacleState state; // the state of character

@@ -65,8 +65,6 @@ void Tank::fire_bullet() {
         } else {
             num_bullets--;
             DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, id, 0));
-            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.04f, id, 0));
-            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.04f, id, 0));
         }
     } else {
         if (num_penerate > 0) {
@@ -88,13 +86,15 @@ void Tank::stun() {
 void Tank::update() {
     DataCenter *DC = DataCenter::get_instance();
 
-    if (hp <= 0) state = TankState::DEAD;
+    if (hp <= 0 && mode == 0) { hp = max_hp = 7200; num_gem = 0; } // score mode
+    if (hp <= 0 && mode == 1) state = TankState::DEAD;  // kill mode
 
     if (num_bullets < 6) bullet_timer -= (1 / DC->FPS);
     if (bullet_timer <= 0) {
         num_bullets++;
-        bullet_timer = 0.1; // Important
+        bullet_timer = 0.1; // 子彈冷卻時間
     }
+    if (hp > max_hp) hp = max_hp;
 
     switch (state)
     {
@@ -166,8 +166,9 @@ void Tank::update() {
 
     if (moving_forward == true) {
         float radian = rotation_angle;
-        float dx = speed * cos(radian);
-        float dy = speed * sin(radian);
+
+        dx = speed * cos(radian);
+        dy = speed * sin(radian);
         
         //tank won't go out
         if(position.x <= 0 && dx > 0){
@@ -268,8 +269,17 @@ void Tank::draw() {
     al_map_rgb(100, 100, 100), 1
     );
 
-    // 寫下血量
     FontCenter *FC = FontCenter::get_instance();
+
+    // 寫下寶石數量
+    if (mode == 0) {
+        al_draw_textf(
+            FC->caviar_dreams[FontSize::SMALL], al_map_rgb(0, 0, 0),
+            bar_x - 5 , bar_y - 5,
+            ALLEGRO_ALIGN_CENTRE, "%d", num_gem);
+    }
+
+    // 寫下血量
 	al_draw_textf(
         FC->courier_new[FontSize::SMALL], al_map_rgb(0, 0, 0),
 		bar_x + 25, bar_y - 6,

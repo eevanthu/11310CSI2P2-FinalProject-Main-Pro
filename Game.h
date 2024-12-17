@@ -32,7 +32,7 @@ private:
 		PAUSE, // -> LEVEL
 		END,
 		KILL_END, // 一方被殺，選離開or重開
-		TANK_CHOOSE // 選坦克+名字
+		TANK_CHOOSE, // 選坦克+名字
 	};
 	STATE state;
 	ALLEGRO_EVENT event;
@@ -60,6 +60,7 @@ struct ChooseTank {     // 選角色
     int name_input_player = 0; // 當前輸入名稱的玩家 (1 或 2)
     bool player1_name_done = false; // 玩家一名稱是否完成輸入
     bool player2_name_done = false; // 玩家一名稱是否完成輸入
+	int mode = 0;
     int typeChar;
 	ALLEGRO_DISPLAY *display;
 	ALLEGRO_TIMER *timer;
