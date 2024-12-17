@@ -40,4 +40,5 @@ DataCenter::~DataCenter()
 	for (Monster *&m : monsters) delete m;
 	for (Tank *&t : tanks) delete t;
 	for (Obstacle *&o : obstacles) delete o;
+	for (std::unique_ptr<Bullet> &b : bullets) b.release();
 }

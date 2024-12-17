@@ -2,6 +2,7 @@
 #include "DataCenter.h"
 #include "../monsters/Monster.h"
 #include "../Player.h"
+//#include "Utils.h"
 /*-----I2P Revise start-----*/
 #include "../Hero.h"
 #include "../Tank.h"
@@ -136,7 +137,7 @@ void OperationCenter::_update_tank_obstacle() {
 				}
 				tanks[i]->set_obstacle_overlap(true);
                 // 簡單地反向退回一段距離
-                const float reverse_distance = 2.0; // 退回的距離
+                const float reverse_distance = 1.5; // 退回的距離
                 float local_dx = cos(tanks[i]->get_rotation_angle()) * reverse_distance;
                 float local_dy = sin(tanks[i]->get_rotation_angle()) * reverse_distance;
 				tanks[i]->set_position(Point{tanks[i]->shape->center_x() + local_dx, tanks[i]->shape->center_y() + local_dy});

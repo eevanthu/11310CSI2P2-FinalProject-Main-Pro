@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include "Tank.h"
+#include "Utils.h"
 #include <allegro5/allegro_primitives.h>
 #include "data/DataCenter.h"
 #include "data/ImageCenter.h"
@@ -43,7 +44,9 @@ void Tank::init() {
     width = al_get_bitmap_width(bitmap);
     height = al_get_bitmap_height(bitmap);
     shape.reset(new Rectangle{position.x, position.y, position.x + width, position.y + height});
+    //shape.reset(new Circle{(int)(position.x + width / 2), (int)(position.y + width / 2), 12});
     // shape.reset(new Circle{int(position.x + width / 2), int(position.y + height / 2), width / 2});
+    
 }
 
 void Tank::fire_bullet() {
@@ -170,13 +173,13 @@ void Tank::update() {
         if(position.x <= 0 && dx > 0){
             dx = 0;
         }
-        if(position.x > 1545 && dx <= 0){
+        if(position.x > 1575 && dx <= 0){
             dx = 0;
         }
         if(position.y <= 0 && dy > 0){
             dy = 0;
         }
-        if(position.y >= 865 && dy <= 0){
+        if(position.y >= 875 && dy <= 0){
             dy = 0;
         }
         
@@ -194,6 +197,12 @@ void Tank::update() {
         } else if (rotation_angle < 0.0f) {
             rotation_angle += 2 * M_PI;
         }
+    }
+    for (auto it = DC->bullets.begin(); it != DC->bullets.end(); ) {
+        if ((*it)->get_fly_dist() <= 0){
+            it = DC->bullets.erase(it);
+            //debug_log("AAAAAAA\n");
+        }else ++it;
     }
     
     // for (auto it = bullets.begin(); it != bullets.end(); ) {
