@@ -66,8 +66,8 @@ void Tank::fire_bullet() {
         } else {
             num_bullets--;
             DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, id, 0));
-            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.04f, id, 1));
-            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.04f, id, 1));
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.04f, id, 0));
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.04f, id, 0));
 
         }
     } else {
