@@ -11,8 +11,8 @@
 #include "Player.h"
 
 // fixed settings
-constexpr char love_img_path[] = "./assets/image/love.png";
-constexpr int love_img_padding = 5;
+// constexpr char love_img_path[] = "./assets/image/love.png";
+// constexpr int love_img_padding = 5;
 // constexpr int tower_img_left_padding = 30;
 // constexpr int tower_img_top_padding = 30;
 
@@ -20,10 +20,10 @@ void
 UI::init() {
 	// DataCenter *DC = DataCenter::get_instance();
 	ImageCenter *IC = ImageCenter::get_instance();
-	love = IC->get(love_img_path);
+	// love = IC->get(love_img_path);
 	// int max_height = 0;
 	// arrange tower shop
-	debug_log("<UI> state: change to HALT\n");
+	// debug_log("<UI> state: change to HALT\n");
 	state = STATE::HALT;
 	on_item = -1;
 }
@@ -79,30 +79,30 @@ UI::draw() {
 	FontCenter *FC = FontCenter::get_instance();
 	// const Point &mouse = DC->mouse;
 	// draw HP
-	const int &game_field_length = DC->game_field_length;
-	const int &player_HP = DC->player->HP;
-	int love_width = al_get_bitmap_width(love);
-	for(int i = 1; i <= player_HP; ++i) {
-		al_draw_bitmap(love, game_field_length - (love_width + love_img_padding) * i, love_img_padding, 0);
-	}
+	// const int &game_field_length = DC->game_field_length;
+	// const int &player_HP = DC->player->HP;
+	// int love_width = al_get_bitmap_width(love);
+	// for(int i = 1; i <= player_HP; ++i) {
+	// 	al_draw_bitmap(love, game_field_length - (love_width + love_img_padding) * i, love_img_padding, 0);
+	// }
 	// draw coin
-	const int &player_coin = DC->player->coin;
-	al_draw_textf(
-		FC->courier_new[FontSize::MEDIUM], al_map_rgb(0, 0, 0),
-		game_field_length+love_img_padding, love_img_padding,
-		ALLEGRO_ALIGN_LEFT, "coin: %5d", player_coin);
+	// const int &player_coin = DC->player->coin;
+	// al_draw_textf(
+	// 	FC->courier_new[FontSize::MEDIUM], al_map_rgb(0, 0, 0),
+	// 	game_field_length+love_img_padding, love_img_padding,
+	// 	ALLEGRO_ALIGN_LEFT, "coin: %5d", player_coin);
 	// draw tower shop items
-	for(auto &[bitmap, p, price] : tower_items) {
-		int w = al_get_bitmap_width(bitmap);
-		int h = al_get_bitmap_height(bitmap);
-		al_draw_bitmap(bitmap, p.x, p.y, 0);
-		al_draw_rectangle(
-			p.x - 1, p.y - 1,
-			p.x + w + 1, p.y + h + 1,
-			al_map_rgb(0, 0, 0), 1);
-		al_draw_textf(
-			FC->courier_new[FontSize::MEDIUM], al_map_rgb(0, 0, 0),
-			p.x + w / 2, p.y + h,
-			ALLEGRO_ALIGN_CENTRE, "%d", price);
-	}
+	// for(auto &[bitmap, p, price] : tower_items) {
+	// 	int w = al_get_bitmap_width(bitmap);
+	// 	int h = al_get_bitmap_height(bitmap);
+	// 	al_draw_bitmap(bitmap, p.x, p.y, 0);
+	// 	al_draw_rectangle(
+	// 		p.x - 1, p.y - 1,
+	// 		p.x + w + 1, p.y + h + 1,
+	// 		al_map_rgb(0, 0, 0), 1);
+	// 	al_draw_textf(
+	// 		FC->courier_new[FontSize::MEDIUM], al_map_rgb(0, 0, 0),
+	// 		p.x + w / 2, p.y + h,
+	// 		ALLEGRO_ALIGN_CENTRE, "%d", price);
+	// }
 }

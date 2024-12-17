@@ -33,6 +33,8 @@ private:
 		END,
 		KILL_END, // 一方被殺，選離開or重開
 		TANK_CHOOSE, // 選坦克+名字
+		P1_WIN,
+		P2_WIN
 	};
 	STATE state;
 	ALLEGRO_EVENT event;

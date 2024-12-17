@@ -9,6 +9,7 @@
 #include "shapes/Rectangle.h"
 #include "shapes/Circle.h"
 #include "./shapes/Point.h"
+#include "Game.h"
 #include "Bullet.h"
 #include <iostream>
 #include <vector>
@@ -43,7 +44,7 @@ void Tank::init() {
     ALLEGRO_BITMAP *bitmap = IC->get(pngPath[state]);
     width = al_get_bitmap_width(bitmap);
     height = al_get_bitmap_height(bitmap);
-    shape.reset(new Rectangle{position.x, position.y, position.x + width, position.y + height});
+    shape.reset(new Rectangle{position.x, position.y, position.x + width / 2, position.y + height / 2});
     //shape.reset(new Circle{(int)(position.x + width / 2), (int)(position.y + width / 2), 12});
     // shape.reset(new Circle{int(position.x + width / 2), int(position.y + height / 2), width / 2});
     
@@ -65,6 +66,9 @@ void Tank::fire_bullet() {
         } else {
             num_bullets--;
             DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle, id, 0));
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle + 0.04f, id, 1));
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, rotation_angle - 0.04f, id, 1));
+
         }
     } else {
         if (num_penerate > 0) {
@@ -95,6 +99,14 @@ void Tank::update() {
         bullet_timer = 0.1; // 子彈冷卻時間
     }
     if (hp > max_hp) hp = max_hp;
+
+    if (DC->key_state[ALLEGRO_KEY_Z] && !DC->prev_key_state[ALLEGRO_KEY_Z]) {
+        float bullet_x = shape->center_x() - (width / 2) * cos(rotation_angle);
+        float bullet_y = shape->center_y() - (width / 2) * sin(rotation_angle);
+        for (float i = 0; i <= 2 * M_PI; i += 0.08) {
+            DC->bullets.push_back(std::make_unique<Bullet>(bullet_x, bullet_y, i, id, 1));
+        }
+    }
 
     switch (state)
     {
@@ -238,7 +250,7 @@ void Tank::draw() {
     float health_bar_height = 10.0; // 血條的高度
     float health_percentage = static_cast<float>(hp) / max_hp;
 
-    float bar_x = position.x + 4; // 血條的左上角 X
+    float bar_x = position.x - 15; // 血條的左上角 X
     float bar_y = position.y - 30;                  // 血條的左上角 Y
     float bar_length = health_bar_width * health_percentage;
 
@@ -273,11 +285,13 @@ void Tank::draw() {
 
     // 寫下寶石數量
     if (mode == 0) {
+        al_draw_bitmap(IC->get("./assets/image/gem.png"), bar_x - 23, bar_y - 5, 0);
         al_draw_textf(
-            FC->caviar_dreams[FontSize::SMALL], al_map_rgb(0, 0, 0),
-            bar_x - 5 , bar_y - 5,
+            FC->courier_new[FontSize::SMALL], al_map_rgb(0, 0, 0),
+            bar_x - 13 , bar_y - 1,
             ALLEGRO_ALIGN_CENTRE, "%d", num_gem);
     }
+
 
     // 寫下血量
 	al_draw_textf(
@@ -291,7 +305,7 @@ void Tank::draw() {
     float bullet_y = bar_y + 15;        // 子彈條的起始 Y 位置
 
     for (int i = 0; i < 6 + num_penerate; ++i) {
-        float bullet_x = bar_x + i * (bullet_width + bullet_gap); // 計算每個子彈條的 X 位置
+        float bullet_x = (bar_x - 7) + i * (bullet_width + bullet_gap); // 計算每個子彈條的 X 位置
 
         if (i < num_bullets) {
             // 裝備的子彈：綠色

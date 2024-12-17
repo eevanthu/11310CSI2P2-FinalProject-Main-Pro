@@ -42,7 +42,7 @@ public:
     void set_speed() { if (speed <= 5) speed += 1; }
     void set_triple_timer() {triple_bullet_timer = 5;}
     void set_obstacle_overlap(bool is_overlap) { is_obstacle_overlap = is_overlap; }
-    int set_num_shield(int num) { num_shield += num; return num_shield; }
+    int set_num_shield(int num) { if (num_shield < 3) num_shield += num; return num_shield; }
     void set_num_penerate(int num) { num_penerate += num;}
     float get_rotation_angle() { return rotation_angle; }
     double get_position_x() { return position.x; }

@@ -28,6 +28,8 @@ constexpr char initial_img_path[] = "./assets/image/initial.jpg";
 constexpr char modechoose_img_path[] = "./assets/image/ModeChoose.jpg";
 constexpr char pause_img_path[] = "./assets/image/pause.jpg";
 constexpr char white_img_path[] = "./assets/image/white.jpg";
+constexpr char p1win_img_path[] = "./assets/image/P1_WIN.jpg";
+constexpr char p2win_img_path[] = "./assets/image/P2_WIN.jpg";
 constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
 
 
@@ -64,6 +66,7 @@ void Game::execute()
                     }
                     if (name_input_player == 2) {
                         player2_name_done = true; // 玩家二完成輸入
+						state = STATE::CHOOSE;
                     }
                     name_input_player = 0; // 結束輸入狀態
                 } else if (isprint(key)) { // 可見字符輸入
@@ -257,6 +260,7 @@ bool Game::game_update()
 			//DC->level->load_level(1);
 			debug_log("<Game> state: change to SCORE\n");
 			background = IC->get(background_img_path);
+			DC->mouse_state[1] = false;
 			state = STATE::SCORE;
 		}
 		else if (DC->mouse_state[1] && DC->mouse.x > 800)
@@ -265,6 +269,7 @@ bool Game::game_update()
 			//DC->level->load_level(1);
 			debug_log("<Game> state: change to KILL\n");
 			background = IC->get(background_img_path);
+			DC->mouse_state[1] = false;
 			state = STATE::KILL;
 		}
 		else 
@@ -279,8 +284,8 @@ bool Game::game_update()
 		if(!tank_is_created_at_game){
 			ControlScheme player1Controls = {ALLEGRO_KEY_W, ALLEGRO_KEY_LEFT};
 			ControlScheme player2Controls = {ALLEGRO_KEY_UP, ALLEGRO_KEY_A};
-			Point tank1Pos = {20, 450};
-			Point tank2Pos = {1565, 450};
+			Point tank1Pos = {40, 450};
+			Point tank2Pos = {1525, 450};
 			Tank* tank1 = new Tank(tank1Pos, player1Controls);
 			Tank* tank2 = new Tank(tank2Pos, player2Controls);
 			// 將坦克加入 DataCenter 的 tanks 向量
@@ -301,7 +306,10 @@ bool Game::game_update()
 			}
 			for (Obstacle* obstacle : DC->obstacles) obstacle->init();
 			obstacle_is_created_at_game = true;
+			debug_log("call obstacle\n");
+
 		}
+		debug_log("<Game> state: change to LEVEL\n");
 		state = STATE::LEVEL;
 		break;
 	}
@@ -770,17 +778,39 @@ bool Game::game_update()
 		if (mode == 0) {
 			for (Tank* tank : DC->tanks) {
 				if (tank->num_gem >= 10) {
-					state = STATE::KILL_END; // 一方獲得10個寶石，遊戲結束
+					if(tank->get_id() == 1){
+						debug_log("<Game> state: change to P1_WIN\n");
+						DC->mouse_state[1] = false;
+						state = STATE::P1_WIN;
+					} else {
+						debug_log("<Game> state: change to P2_WIN\n");
+						DC->mouse_state[1] = false;
+						state = STATE::P2_WIN;
+					}
+					//state = STATE::KILL_END; // 一方獲得10個寶石，遊戲結束
 				}
 			}
 		} else {
 			for (Tank* tank : DC->tanks) {
 				if (tank->get_state() == TankState::DEAD) {
-					state = STATE::KILL_END;
+					int loser = tank->get_id();
+					if(loser == 1){
+						debug_log("<Game> state: change to P2_WIN\n");
+						DC->mouse_state[1] = false;
+						state = STATE::P2_WIN;
+					}
+					else if(loser == 2){
+						debug_log("<Game> state: change to P1_WIN\n");
+						DC->mouse_state[1] = false;
+						state = STATE::P1_WIN;
+					}
+					//state = STATE::KILL_END;
 				}
-			};
-			break;
+				
+			}
+			
 		}
+		break;
 	}
 	case STATE::PAUSE:
 	{
@@ -829,24 +859,15 @@ bool Game::game_update()
 	}
 	case STATE::KILL_END: //一方被殺
 	{
-		for (Tank* tank : DC->tanks) {
-            delete tank; // 釋放坦克物件的記憶體
-		}
-		DC->tanks.clear(); // 清空坦克向量
-
-			// 刪除障礙物
-		for (Obstacle* obstacle : DC->obstacles) {
-			delete obstacle; // 釋放障礙物物件的記憶體
-		}
-		DC->obstacles.clear(); // 清空障礙物向量
 		background = IC->get(pause_img_path);
-		//重來 OR 結束
 		if(DC->key_state[ALLEGRO_KEY_R] || (DC->mouse_state[1]) && DC->mouse.x < 800){
 			DC->mouse_state[1] = false;
+			debug_log("<Game> state: change to CHOOSE\n");
 			state = STATE::CHOOSE;
 		}
 		else if(DC->key_state[ALLEGRO_KEY_E] || (DC->mouse_state[1]) && DC->mouse.x > 800){
 			DC->mouse_state[1] = false;
+			debug_log("<Game> state: change to END\n");
 			state = STATE::END;
 		}
 		break;
@@ -885,19 +906,15 @@ bool Game::game_update()
                 name_input_player = 2;
                 player_turn = 3; // 所有玩家選擇完成
 				//DC->mouse_state[1] = false;
-				
             }
         }
-    }
-	//if(player2_name_done) background = IC->get(white_img_path);
-    // 檢查是否按下開始按鈕並完成名稱輸入
-    if (player_turn == 3 && !name_input_active && player2_name_done) {
+		if (player_turn == 3 && !name_input_active && player2_name_done) {
         // 確認角色選擇並初始化遊戲角色
         //apply_character_selection();
 		background = IC->get(modechoose_img_path);
         // 輸出玩家名稱
-        debug_log("Player 1 Name: %s\n", player1_name.c_str());
-        debug_log("Player 2 Name: %s\n", player2_name.c_str());
+        //debug_log("Player 1 Name: %s\n", player1_name.c_str());
+        //debug_log("Player 2 Name: %s\n", player2_name.c_str());
 		if(DC->mouse_state[1]){
 			debug_log("<Game> state: change to CHOOSE\n");
 			state = STATE::CHOOSE;
@@ -905,6 +922,52 @@ bool Game::game_update()
     }
 	//background = IC->get(modechoose_img_path);
     break;
+    }
+	//if(player2_name_done) background = IC->get(white_img_path);
+    // 檢查是否按下開始按鈕並完成名稱輸入
+	case STATE::P1_WIN:
+	{
+		for (Tank* tank : DC->tanks) {
+            delete tank; // 釋放坦克物件的記憶體
+		}
+		DC->tanks.clear(); // 清空坦克向量
+
+			// 刪除障礙物
+		for (Obstacle* obstacle : DC->obstacles) {
+			delete obstacle; // 釋放障礙物物件的記憶體
+		}
+		DC->obstacles.clear(); // 清空障礙物向量
+		background =IC->get(p1win_img_path);
+		//background = IC->get(p1win_img_path);
+		if(DC->mouse_state[1]){
+			DC->mouse_state[1] = false;
+			debug_log("<Game> state: change to KILL_END\n");
+			state =STATE::KILL_END;
+		}
+		break;
+	}
+	case STATE::P2_WIN:
+	{
+		//background =IC->get(p2win_img_path);
+		for (Tank* tank : DC->tanks) {
+            delete tank; // 釋放坦克物件的記憶體
+		}
+		DC->tanks.clear(); // 清空坦克向量
+
+			// 刪除障礙物
+		for (Obstacle* obstacle : DC->obstacles) {
+			delete obstacle; // 釋放障礙物物件的記憶體
+		}
+		DC->obstacles.clear(); // 清空障礙物向量
+		background =IC->get(p2win_img_path);
+		//background = IC->get(pause_img_path);
+		if(DC->mouse_state[1]){
+			DC->mouse_state[1] = false;
+			debug_log("<Game> state: change to KILL_END\n");
+			state = STATE::KILL_END;
+		}
+		break;
+	}
 	}
 	
 	// If the game is not paused, we should progress update.
@@ -1013,6 +1076,24 @@ void Game::game_draw()
 	}
 	case STATE::END:
 	{
+		break;
+	}
+	case STATE::P1_WIN:
+	{
+		std::string name = "(" + player1_name + ")";
+		al_draw_text(
+			FC->caviar_dreams[FontSize::VERYLARGE], al_map_rgb(0, 0, 0),
+			300, 300,
+			ALLEGRO_ALIGN_CENTRE, name.c_str());
+		break;
+	}
+	case STATE::P2_WIN:
+	{
+		std::string name = "(" + player2_name + ")";
+		al_draw_text(
+			FC->caviar_dreams[FontSize::VERYLARGE], al_map_rgb(0, 0, 0),
+			300, 300,
+			ALLEGRO_ALIGN_CENTRE, name.c_str());
 		break;
 	}
 	case STATE::KILL_END:
